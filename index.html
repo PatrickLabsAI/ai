@@ -5,8 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Water Safety — Patrick Labs AI</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
+<!-- 💧 썸네일 -->
 <meta property="og:title" content="Can I drink this water?" />
 <meta property="og:description" content="Check water safety instantly worldwide." />
 <meta property="og:image" content="https://cdn-icons-png.flaticon.com/512/728/728093.png" />
@@ -14,8 +15,11 @@
 <meta name="twitter:card" content="summary_large_image" />
 
 <style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
 :root {
   --bg: #f5f4f0;
+  --surface: #ffffff;
   --border: #e8e5de;
   --text: #0f0f0f;
   --muted: #888;
@@ -27,12 +31,12 @@
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Instrument Sans', 'Inter', sans-serif;
   background: var(--bg);
-  margin: 0;
   color: var(--text);
 }
 
+/* TOPBAR */
 .topbar {
   border-bottom: 1px solid var(--border);
   padding: 13px 20px;
@@ -48,11 +52,14 @@ body {
   color: var(--muted);
 }
 
+/* 🌍 회전 지구 */
 .globe-icon {
+  font-size: 16px;
   animation: spin 6s linear infinite;
 }
+
 @keyframes spin {
-  from { transform: rotate(0); }
+  from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
 
@@ -62,18 +69,28 @@ body {
   padding: 36px 20px;
 }
 
+/* HEADER */
+.header-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+
 h1 {
   font-family: 'Syne';
   font-size: 30px;
   color: var(--navy);
+  margin: 10px 0;
 }
+
+h1 span { opacity: 0.4; }
 
 .data-source {
   font-size: 12px;
   color: var(--muted);
-  margin-top: 6px;
 }
 
+/* CARD */
 .card {
   background: white;
   border-radius: 20px;
@@ -86,20 +103,26 @@ h1 {
   position: relative;
 }
 
+.input-wrap { position: relative; }
+
+.input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 #location {
   width: 100%;
-  padding: 14px;
+  padding: 14px 14px 14px 36px;
   border-radius: 12px;
   border: 1px solid var(--border);
-  background: #fafafa;
-  font-size: 15px;
+  background: var(--bg);
+  font-family: 'Inter', sans-serif;
   font-weight: 500;
 }
 
-#location::placeholder {
-  color: #bbb;
-}
-
+/* 자동완성 */
 #suggestions {
   position: absolute;
   width: 100%;
@@ -111,16 +134,18 @@ h1 {
 }
 
 .sug-item {
-  padding: 12px;
-  font-size: 14px;
+  padding: 10px;
+  cursor: pointer;
   display: flex;
   justify-content: space-between;
+  font-family: 'Inter';
 }
 
 .sug-item:hover {
-  background: #f3f3f3;
+  background: #f0f0f0;
 }
 
+/* 버튼 */
 .btn-check {
   width: calc(100% - 36px);
   margin: 0 18px 18px;
@@ -130,26 +155,40 @@ h1 {
   background: var(--navy);
   color: white;
   font-weight: 600;
-  font-size: 15px;
   cursor: pointer;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
 }
 
+/* 버튼 물 애니메이션 */
+.btn-water {
+  width: 16px;
+  height: 16px;
+  fill: white;
+  animation: waterFlow 1.8s ease-in-out infinite;
+}
+
+@keyframes waterFlow {
+  0% { transform: translateY(0); opacity: 0.8; }
+  50% { transform: translateY(3px); opacity: 1; }
+  100% { transform: translateY(0); opacity: 0.8; }
+}
+
+/* 결과 */
 #result {
   margin: 0 18px 18px;
+  font-family: 'Inter';
 }
 
-.result-card {
-  background: #fafafa;
-  border-radius: 14px;
-  padding: 16px;
-}
-
-.result-title {
-  font-size: 18px;
+.result-status {
+  font-size: 20px;
   font-weight: 600;
 }
 
-.result-desc {
+.result-reason {
   font-size: 13px;
   color: #666;
   margin-top: 6px;
@@ -177,22 +216,33 @@ h1 {
 
 <div class="container">
 
-<h1>Can I drink this water?</h1>
-<div class="data-source">Based on global water safety patterns</div>
+<div>
+  <div class="header-eyebrow">Water Safety</div>
+  <h1>Can I drink<br><span>this water?</span></h1>
+  <div class="data-source">Based on WHO, CDC, UNICEF & local authorities</div>
+</div>
 
 <div class="card">
   <div class="input-section">
-    <input id="location" placeholder="Search city..." oninput="showSuggestions()" />
-    <div id="suggestions"></div>
+    <div class="input-wrap">
+      <span class="input-icon">🔍</span>
+      <input id="location" placeholder="Enter city or country..." oninput="showSuggestions()" />
+      <div id="suggestions"></div>
+    </div>
   </div>
 
-  <button class="btn-check" onclick="checkWater()">Check Water 💧</button>
+  <button class="btn-check" onclick="checkWater()">
+    <span>Check Water</span>
+    <svg class="btn-water" viewBox="0 0 24 24">
+      <path d="M12 2C12 2 7 8 7 12a5 5 0 0 0 10 0c0-4-5-10-5-10z"/>
+    </svg>
+  </button>
 
   <div id="result"></div>
 </div>
 
 <div class="footer">
-AI-estimated data. Always verify locally.
+Data is for guidance only. Always verify locally.
 </div>
 
 </div>
@@ -213,6 +263,7 @@ const data = {
   "cairo": {flag:"🇪🇬", status:"DANGER", reason:"Inconsistent quality."}
 };
 
+// 자동완성
 function showSuggestions(){
   const input = document.getElementById("location").value.toLowerCase();
   const box = document.getElementById("suggestions");
@@ -227,7 +278,7 @@ function showSuggestions(){
       const div = document.createElement("div");
       div.className="sug-item";
       div.innerHTML = `<span>${city}</span><span>${data[city].flag}</span>`;
-      div.onclick = ()=>{
+      div.onclick=()=>{
         document.getElementById("location").value=city;
         box.innerHTML="";
       }
@@ -235,16 +286,15 @@ function showSuggestions(){
     });
 }
 
+// 결과
 function checkWater(){
   const val = document.getElementById("location").value.toLowerCase().trim();
   const result = document.getElementById("result");
 
   if(!data[val]){
     result.innerHTML=`
-      <div class="result-card">
-        <div class="warning result-title">Checking water quality...</div>
-        <div class="result-desc">Analyzing global data</div>
-      </div>
+      <div class="warning result-status">Checking water quality...</div>
+      <div class="result-reason">Analyzing global data</div>
     `;
     return;
   }
@@ -255,15 +305,12 @@ function checkWater(){
   if(d.status==="DANGER") cls="danger";
 
   result.innerHTML=`
-    <div class="result-card">
-      <div class="result-title ${cls}">
-        ${d.flag} ${d.status}
-      </div>
-      <div class="result-desc">${d.reason}</div>
+    <div class="result-status ${cls}">
+      ${d.flag} ${d.status}
     </div>
+    <div class="result-reason">${d.reason}</div>
   `;
 }
-
 </script>
 
 </body>
