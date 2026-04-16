@@ -5,9 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Water Safety — Patrick Labs AI</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600&family=Instrument+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-<!-- 💧 썸네일 -->
 <meta property="og:title" content="Can I drink this water?" />
 <meta property="og:description" content="Check water safety instantly worldwide." />
 <meta property="og:image" content="https://cdn-icons-png.flaticon.com/512/728/728093.png" />
@@ -15,11 +14,8 @@
 <meta name="twitter:card" content="summary_large_image" />
 
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 :root {
   --bg: #f5f4f0;
-  --surface: #ffffff;
   --border: #e8e5de;
   --text: #0f0f0f;
   --muted: #888;
@@ -31,8 +27,9 @@
 }
 
 body {
-  font-family: 'Instrument Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   background: var(--bg);
+  margin: 0;
   color: var(--text);
 }
 
@@ -52,12 +49,10 @@ body {
 }
 
 .globe-icon {
-  font-size: 16px;
   animation: spin 6s linear infinite;
 }
-
 @keyframes spin {
-  from { transform: rotate(0deg); }
+  from { transform: rotate(0); }
   to { transform: rotate(360deg); }
 }
 
@@ -67,24 +62,16 @@ body {
   padding: 36px 20px;
 }
 
-.header-eyebrow {
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  color: var(--muted);
-}
-
 h1 {
   font-family: 'Syne';
   font-size: 30px;
   color: var(--navy);
-  margin: 10px 0;
 }
-
-h1 span { opacity: 0.4; }
 
 .data-source {
   font-size: 12px;
   color: var(--muted);
+  margin-top: 6px;
 }
 
 .card {
@@ -99,21 +86,18 @@ h1 span { opacity: 0.4; }
   position: relative;
 }
 
-.input-wrap { position: relative; }
-
-.input-icon {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
 #location {
   width: 100%;
-  padding: 14px 14px 14px 36px;
+  padding: 14px;
   border-radius: 12px;
   border: 1px solid var(--border);
-  background: var(--bg);
+  background: #fafafa;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+#location::placeholder {
+  color: #bbb;
 }
 
 #suggestions {
@@ -127,12 +111,14 @@ h1 span { opacity: 0.4; }
 }
 
 .sug-item {
-  padding: 10px;
-  cursor: pointer;
+  padding: 12px;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
 }
 
 .sug-item:hover {
-  background: #f0f0f0;
+  background: #f3f3f3;
 }
 
 .btn-check {
@@ -144,29 +130,29 @@ h1 span { opacity: 0.4; }
   background: var(--navy);
   color: white;
   font-weight: 600;
+  font-size: 15px;
   cursor: pointer;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-}
-
-.btn-water {
-  width: 16px;
-  height: 16px;
-  fill: white;
-  animation: waterFlow 1.8s ease-in-out infinite;
-}
-
-@keyframes waterFlow {
-  0% { transform: translateY(0); opacity: 0.8; }
-  50% { transform: translateY(3px); opacity: 1; }
-  100% { transform: translateY(0); opacity: 0.8; }
 }
 
 #result {
   margin: 0 18px 18px;
+}
+
+.result-card {
+  background: #fafafa;
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.result-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.result-desc {
+  font-size: 13px;
+  color: #666;
+  margin-top: 6px;
 }
 
 .safe { color: var(--safe); }
@@ -191,27 +177,16 @@ h1 span { opacity: 0.4; }
 
 <div class="container">
 
-<div>
-  <div class="header-eyebrow">Water Safety</div>
-  <h1>Can I drink<br><span>this water?</span></h1>
-  <div class="data-source">Based on WHO, CDC, UNICEF & global patterns</div>
-</div>
+<h1>Can I drink this water?</h1>
+<div class="data-source">Based on global water safety patterns</div>
 
 <div class="card">
   <div class="input-section">
-    <div class="input-wrap">
-      <span class="input-icon">🔍</span>
-      <input id="location" placeholder="Enter city..." oninput="showSuggestions()" />
-      <div id="suggestions"></div>
-    </div>
+    <input id="location" placeholder="Search city..." oninput="showSuggestions()" />
+    <div id="suggestions"></div>
   </div>
 
-  <button class="btn-check" onclick="checkWater()">
-    <span>Check Water</span>
-    <svg class="btn-water" viewBox="0 0 24 24">
-      <path d="M12 2C12 2 7 8 7 12a5 5 0 0 0 10 0c0-4-5-10-5-10z"/>
-    </svg>
-  </button>
+  <button class="btn-check" onclick="checkWater()">Check Water 💧</button>
 
   <div id="result"></div>
 </div>
@@ -225,48 +200,19 @@ AI-estimated data. Always verify locally.
 <script>
 
 const data = {
-
-  // Asia
-  "seoul": {status:"SAFE", reason:"Strict regulation and modern purification."},
-  "tokyo": {status:"SAFE", reason:"Clean and reliable tap system."},
-  "osaka": {status:"SAFE", reason:"Safe municipal supply."},
-  "bangkok": {status:"WARNING", reason:"Bacteria risk. Bottled recommended."},
-  "singapore": {status:"SAFE", reason:"One of the cleanest water systems."},
-  "jakarta": {status:"DANGER", reason:"High contamination risk."},
-  "bali": {status:"DANGER", reason:"Unsafe due to bacteria."},
-  "manila": {status:"DANGER", reason:"Unsafe tap water."},
-  "hanoi": {status:"WARNING", reason:"Boil before drinking."},
-  "delhi": {status:"DANGER", reason:"Severe contamination risk."},
-  "mumbai": {status:"DANGER", reason:"Varies. Avoid tap."},
-  "bangalore": {status:"WARNING", reason:"Filtered water advised."},
-  "dubai": {status:"SAFE", reason:"Desalinated and treated."},
-
-  // Europe
-  "paris": {status:"SAFE", reason:"Highly regulated system."},
-  "london": {status:"SAFE", reason:"Strict safety standards."},
-  "berlin": {status:"SAFE", reason:"High quality groundwater."},
-  "rome": {status:"SAFE", reason:"Safe public fountains."},
-  "madrid": {status:"SAFE", reason:"Clean mountain water."},
-  "amsterdam": {status:"SAFE", reason:"Top water quality."},
-
-  // Americas
-  "new york": {status:"SAFE", reason:"Reservoir-based clean water."},
-  "los angeles": {status:"SAFE", reason:"Treated municipal supply."},
-  "toronto": {status:"SAFE", reason:"High quality freshwater."},
-  "mexico city": {status:"DANGER", reason:"Unsafe tap water."},
-  "rio de janeiro": {status:"WARNING", reason:"Avoid tap water."},
-
-  // Africa
-  "cairo": {status:"DANGER", reason:"Inconsistent quality."},
-  "nairobi": {status:"DANGER", reason:"Unsafe tap water."},
-  "cape town": {status:"SAFE", reason:"Generally safe supply."},
-
-  // Oceania
-  "sydney": {status:"SAFE", reason:"Strict quality standards."},
-  "auckland": {status:"SAFE", reason:"Clean natural sources."}
+  "seoul": {flag:"🇰🇷", status:"SAFE", reason:"Strict regulation and purification."},
+  "tokyo": {flag:"🇯🇵", status:"SAFE", reason:"Clean tap system."},
+  "bangkok": {flag:"🇹🇭", status:"WARNING", reason:"Avoid tap water."},
+  "bali": {flag:"🇮🇩", status:"DANGER", reason:"Bacteria contamination."},
+  "delhi": {flag:"🇮🇳", status:"DANGER", reason:"Unsafe tap water."},
+  "mumbai": {flag:"🇮🇳", status:"DANGER", reason:"Water quality varies."},
+  "paris": {flag:"🇫🇷", status:"SAFE", reason:"Highly regulated."},
+  "london": {flag:"🇬🇧", status:"SAFE", reason:"Strict standards."},
+  "new york": {flag:"🇺🇸", status:"SAFE", reason:"Clean reservoir water."},
+  "sydney": {flag:"🇦🇺", status:"SAFE", reason:"Safe municipal supply."},
+  "cairo": {flag:"🇪🇬", status:"DANGER", reason:"Inconsistent quality."}
 };
 
-// 자동완성
 function showSuggestions(){
   const input = document.getElementById("location").value.toLowerCase();
   const box = document.getElementById("suggestions");
@@ -280,8 +226,8 @@ function showSuggestions(){
     .forEach(city => {
       const div = document.createElement("div");
       div.className="sug-item";
-      div.innerText=city;
-      div.onclick=()=>{
+      div.innerHTML = `<span>${city}</span><span>${data[city].flag}</span>`;
+      div.onclick = ()=>{
         document.getElementById("location").value=city;
         box.innerHTML="";
       }
@@ -289,15 +235,16 @@ function showSuggestions(){
     });
 }
 
-// 결과
 function checkWater(){
   const val = document.getElementById("location").value.toLowerCase().trim();
   const result = document.getElementById("result");
 
   if(!data[val]){
     result.innerHTML=`
-      <div class="warning"><strong>Checking water quality...</strong></div>
-      <div>We are analyzing global data sources</div>
+      <div class="result-card">
+        <div class="warning result-title">Checking water quality...</div>
+        <div class="result-desc">Analyzing global data</div>
+      </div>
     `;
     return;
   }
@@ -308,8 +255,12 @@ function checkWater(){
   if(d.status==="DANGER") cls="danger";
 
   result.innerHTML=`
-    <div class="${cls}"><strong>${d.status}</strong></div>
-    <div>${d.reason}</div>
+    <div class="result-card">
+      <div class="result-title ${cls}">
+        ${d.flag} ${d.status}
+      </div>
+      <div class="result-desc">${d.reason}</div>
+    </div>
   `;
 }
 
