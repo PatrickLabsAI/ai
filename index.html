@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Water Safety — Patrick Labs AI</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=Instrument+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f5f4f0;
+  --surface: #ffffff;
+  --border: #e8e5de;
+  --text: #0f0f0f;
+  --muted: #888;
+  --navy: #0B1F3B;
+
+  --safe:#1a7a4a;
+  --warn:#a05c00;
+  --danger:#c0272d;
+}
+
+body {
+  font-family: 'Instrument Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* TOPBAR */
+.topbar {
+  border-bottom: 1px solid var(--border);
+  padding: 13px 20px;
+  display: flex;
+  justify-content: space-between;
+  background: white;
+}
+
+.topbar-brand {
+  font-family: 'Syne';
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+
+/* 🌍 회전 지구 */
+.globe-icon {
+  font-size: 16px;
+  animation: spin 6s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.container {
+  max-width: 460px;
+  margin: auto;
+  padding: 36px 20px;
+}
+
+/* HEADER */
+.header-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+
+h1 {
+  font-family: 'Syne';
+  font-size: 30px;
+  color: var(--navy);
+  margin: 10px 0;
+}
+
+h1 span { opacity: 0.4; }
+
+.data-source {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* CARD */
+.card {
+  background: white;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  margin-top: 25px;
+}
+
+.input-section {
+  padding: 18px;
+  position: relative;
+}
+
+.input-wrap { position: relative; }
+
+.input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#location {
+  width: 100%;
+  padding: 14px 14px 14px 36px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+}
+
+/* 자동완성 */
+#suggestions {
+  position: absolute;
+  width: 100%;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  margin-top: 5px;
+  z-index: 10;
+}
+
+.sug-item {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.sug-item:hover {
+  background: #f0f0f0;
+}
+
+/* 버튼 */
+.btn-check {
+  width: calc(100% - 36px);
+  margin: 0 18px 18px;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: var(--navy);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 버튼 물 애니메이션 */
+.btn-water {
+  width: 16px;
+  height: 16px;
+  fill: white;
+  animation: waterFlow 1.8s ease-in-out infinite;
+}
+
+@keyframes waterFlow {
+  0% { transform: translateY(0); opacity: 0.8; }
+  50% { transform: translateY(3px); opacity: 1; }
+  100% { transform: translateY(0); opacity: 0.8; }
+}
+
+/* 결과 */
+#result {
+  margin: 0 18px 18px;
+}
+
+.safe { color: var(--safe); }
+.warning { color: var(--warn); }
+.danger { color: var(--danger); }
+
+.footer {
+  text-align: center;
+  font-size: 11px;
+  color: #aaa;
+  margin-top: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+  <span class="topbar-brand">Patrick Labs AI</span>
+  <div class="globe-icon">🌍</div>
+</div>
+
+<div class="container">
+
+<div>
+  <div class="header-eyebrow">Water Safety</div>
+  <h1>Can I drink<br><span>this water?</span></h1>
+  <div class="data-source">Based on WHO, CDC, UNICEF & local authorities</div>
+</div>
+
+<div class="card">
+  <div class="input-section">
+    <div class="input-wrap">
+      <span class="input-icon">🔍</span>
+      <input id="location" placeholder="Enter city or country..." oninput="showSuggestions()" />
+      <div id="suggestions"></div>
+    </div>
+  </div>
+
+  <button class="btn-check" onclick="checkWater()">
+    <span>Check Water</span>
+    <svg class="btn-water" viewBox="0 0 24 24">
+      <path d="M12 2C12 2 7 8 7 12a5 5 0 0 0 10 0c0-4-5-10-5-10z"/>
+    </svg>
+  </button>
+
+  <div id="result"></div>
+</div>
+
+<div class="footer">
+Data is for guidance only. Always verify locally.
+</div>
+
+</div>
+
+<script>
+const data = {
+  "korea": {status:"SAFE", risk:"Low"},
+  "japan": {status:"SAFE", risk:"Low"},
+  "india": {status:"DANGER", risk:"Contamination"},
+  "bali": {status:"DANGER", risk:"Bacteria"}
+};
+
+function showSuggestions(){
+  const input = document.getElementById("location").value.toLowerCase();
+  const box = document.getElementById("suggestions");
+  box.innerHTML="";
+
+  for(let key in data){
+    if(key.includes(input)){
+      const div = document.createElement("div");
+      div.className="sug-item";
+      div.innerText=key;
+      div.onclick=()=>{
+        document.getElementById("location").value=key;
+        box.innerHTML="";
+      }
+      box.appendChild(div);
+    }
+  }
+}
+
+function checkWater(){
+  const val = document.getElementById("location").value.toLowerCase();
+  const result = document.getElementById("result");
+
+  if(!data[val]){
+    result.innerHTML="No data.";
+    return;
+  }
+
+  const d = data[val];
+  let cls="warning";
+  if(d.status==="SAFE") cls="safe";
+  if(d.status==="DANGER") cls="danger";
+
+  result.innerHTML = `
+    <div class="${cls}"><strong>${d.status}</strong></div>
+    <div>Risk: ${d.risk}</div>
+  `;
+}
+</script>
+
+</body>
+</html>
