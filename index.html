@@ -43,8 +43,8 @@ body {
 
 h1{
   font-family:'Syne';
-  font-size:34px;
-  margin-top:4px;
+  font-size:32px;
+  margin-top:0px;
   color:#0B1F3B;
 }
 
@@ -72,12 +72,12 @@ h1 span{
   height:200px;
   border:none;
   border-radius:14px;
-  margin-top:10px;
+  margin-top:8px;
   pointer-events:none;
 }
 
 .card{
-  margin-top:18px;
+  margin-top:16px;
   background:white;
   border-radius:20px;
   padding:16px;
@@ -99,7 +99,7 @@ input{
 
 #suggestions{
   position:absolute;
-  top:50px;
+  top:52px;
   left:0;
   right:0;
   background:white;
@@ -107,6 +107,7 @@ input{
   border:1px solid #e5e5e5;
   max-height:200px;
   overflow-y:auto;
+  z-index:10;
 }
 
 .sug{
@@ -151,8 +152,8 @@ button{
 <div class="container">
 
 <h1>
-  Can I drink<br>
-  <span>this water?</span>
+Can I drink<br>
+<span>this water?</span>
 </h1>
 
 <div class="tagline">
@@ -168,9 +169,9 @@ button{
 
 <div class="input-wrap">
 <input id="locationInput"
- placeholder="Enter any city or country"
- onfocus="showPopular()"
- oninput="showSuggestions()">
+placeholder="Enter any city or country"
+onfocus="showPopular()"
+oninput="showSuggestions()">
 <div id="suggestions"></div>
 </div>
 
@@ -193,7 +194,7 @@ const suggestions = document.getElementById("suggestions");
 
 let lastResult="";
 
-/* 🌍 글로벌 데이터 (80개 구조 기반 핵심) */
+/* 🌍 데이터 */
 const data = {
 "global":{status:"WARNING",phone:""},
 "south korea":{status:"SAFE",phone:"+821339"},
@@ -210,29 +211,25 @@ const data = {
 "united states":{status:"SAFE",phone:"+18004264791"},
 "canada":{status:"SAFE",phone:"+18002679988"},
 "mexico":{status:"WARNING",phone:"+525511055420"},
-"brazil":{status:"WARNING",phone:"+551363324400"},
-"argentina":{status:"SAFE",phone:"+541143212000"},
 
 "united kingdom":{status:"SAFE",phone:"+441234567890"},
 "france":{status:"SAFE",phone:"+3315"},
 "germany":{status:"SAFE",phone:"+4911220"},
-"italy":{status:"SAFE",phone:"+391500"},
-"spain":{status:"SAFE",phone:"+34902101102"},
 
 "south africa":{status:"WARNING",phone:"+27123000000"},
 "kenya":{status:"WARNING",phone:"+254202717077"},
 "egypt":{status:"WARNING",phone:"+20227956300"},
 "nigeria":{status:"DANGER",phone:"+2347000000000"},
-"ghana":{status:"WARNING",phone:"+233302682611"},
-
-"australia":{status:"SAFE",phone:"+611800022222"},
-"new zealand":{status:"SAFE",phone:"+64800400000"}
+"ghana":{status:"WARNING",phone:"+233302682611"}
 };
 
-/* 🔥 최소 핵심 도시만 유지 (자동 fallback 구조) */
+const countries = Object.keys(data);
+
+/* 도시 */
 const cityMap = {
-"seoul":"south korea","tokyo":"japan","paris":"france","london":"united kingdom",
-"new york":"united states","mumbai":"india","nairobi":"kenya","lagos":"nigeria",
+"seoul":"south korea","tokyo":"japan","paris":"france",
+"london":"united kingdom","new york":"united states",
+"mumbai":"india","nairobi":"kenya","lagos":"nigeria",
 "cape town":"south africa","cairo":"egypt"
 };
 
@@ -241,51 +238,43 @@ const popular=[
 "New York 🇺🇸","Mumbai 🇮🇳","Nairobi 🇰🇪","Lagos 🇳🇬"
 ];
 
-/* 🔥 핵심 로직 */
-function getCountry(inputVal){
-let val=inputVal.toLowerCase().trim();
+function getCountry(val){
+val=val.toLowerCase().trim();
 if(data[val]) return val;
 if(cityMap[val]) return cityMap[val];
 return "global";
 }
 
-function render(obj,name,isLoc=false){
-
+function render(obj,name){
 let explanation =
 obj.status==="SAFE"
-? "✅ Clean, treated water with strong infrastructure."
+? "✅ Clean & safe tap water."
 : obj.status==="DANGER"
-? "🚫 High contamination risk. Avoid tap water."
-: "⚠️ Boil or filter before drinking.";
+? "🚫 Unsafe. Avoid drinking."
+: "⚠️ Boil or filter recommended.";
 
-let extra = isLoc ? "<div>📍 Nearby conditions applied</div>" : "";
-
-lastResult = `${name}: ${obj.status}`;
+lastResult=`${name}: ${obj.status}`;
 
 result.innerHTML=`
 <b>${obj.status}</b><br>
 ${explanation}<br><br>
-${obj.phone ? `📞 <a href="tel:${obj.phone}">Call water authority</a>` : ""}
-${extra}
+${obj.phone?`📞 <a href="tel:${obj.phone}">Call authority</a>`:""}
 `;
 }
 
-/* 🔥 클릭 즉시 결과 */
-function selectCity(name){
+function selectItem(name){
 input.value=name;
 suggestions.innerHTML="";
-let country=getCountry(name);
-render(data[country],name);
+render(data[getCountry(name)],name);
 }
 
 function showPopular(){
 suggestions.innerHTML="";
 popular.forEach(c=>{
-let name=c.split(" ")[0]+" "+(c.split(" ")[1]||"");
 let d=document.createElement("div");
 d.className="sug";
 d.innerText=c;
-d.onclick=()=>selectCity(c.split(" ")[0]);
+d.onclick=()=>selectItem(c.split(" ")[0]);
 suggestions.appendChild(d);
 });
 }
@@ -293,14 +282,27 @@ suggestions.appendChild(d);
 function showSuggestions(){
 let val=input.value.toLowerCase();
 suggestions.innerHTML="";
+
 if(!val){showPopular();return;}
 
-Object.keys(cityMap).forEach(key=>{
-if(key.includes(val)){
+/* 도시 */
+Object.keys(cityMap).forEach(k=>{
+if(k.includes(val)){
 let d=document.createElement("div");
 d.className="sug";
-d.innerText=key;
-d.onclick=()=>selectCity(key);
+d.innerText=k;
+d.onclick=()=>selectItem(k);
+suggestions.appendChild(d);
+}
+});
+
+/* 국가 */
+countries.forEach(c=>{
+if(c.includes(val)){
+let d=document.createElement("div");
+d.className="sug";
+d.innerText=c;
+d.onclick=()=>selectItem(c);
 suggestions.appendChild(d);
 }
 });
@@ -318,8 +320,7 @@ if(!val){
 result.innerHTML="❗ Enter location";
 return;
 }
-let country=getCountry(val);
-render(data[country],val);
+render(data[getCountry(val)],val);
 }
 
 function useMyLocation(){
@@ -327,7 +328,6 @@ result.innerHTML="📡 Getting location...";
 suggestions.innerHTML="";
 
 navigator.geolocation.getCurrentPosition(async(pos)=>{
-try{
 let res=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
 let loc=await res.json();
 
@@ -338,25 +338,15 @@ loc.address.state ||
 loc.address.country;
 
 input.value=place;
+render(data[getCountry(place)],place);
 
-let country=getCountry(place);
-render(data[country],place,true);
-
-}catch{
-result.innerHTML="❌ Location failed";
-}
-},()=>{
-result.innerHTML="❌ Permission denied";
-});
+},()=>{ result.innerHTML="❌ Permission denied"; });
 }
 
 function shareResult(){
-if(!lastResult){
-alert("Check water first!");
-return;
-}
+if(!lastResult){alert("Check water first!");return;}
 navigator.share
-? navigator.share({title:"Water Safety",text:lastResult,url:location.href})
+? navigator.share({title:"Water",text:lastResult,url:location.href})
 : (navigator.clipboard.writeText(lastResult), alert("Copied!"));
 }
 
