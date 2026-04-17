@@ -52,9 +52,9 @@ h1 span{
   color:#9aa0a6;
 }
 
-/* 🔥 문구 더 위 */
+/* 🔥 확실히 위로 */
 .tagline{
-  margin-top:0px;
+  margin-top:-6px;
   font-size:13px;
   color:#7a7f87;
 }
@@ -96,7 +96,6 @@ input{
   border:1px solid #e5e5e5;
   background:#f7f7f7;
   font-size:15px;
-  box-sizing:border-box;
 }
 
 #suggestions{
@@ -107,7 +106,6 @@ input{
   background:white;
   border-radius:12px;
   border:1px solid #e5e5e5;
-  overflow:hidden;
 }
 
 .sug{
@@ -127,8 +125,6 @@ button{
   border:none;
   background:#0B1F3B;
   color:white;
-  font-size:15px;
-  cursor:pointer;
 }
 
 .share{
@@ -196,13 +192,13 @@ const suggestions = document.getElementById("suggestions");
 
 let lastResult="";
 
-/* 🔥 정확한 국가 데이터 */
+/* 🌍 국제 전화번호 */
 const data = {
-"south korea":{status:"SAFE",phone:"1339"},
-"france":{status:"SAFE",phone:"15"},
-"india":{status:"DANGER",phone:"104"},
+"south korea":{status:"SAFE",phone:"+821339"},
+"france":{status:"SAFE",phone:"+3315"},
+"india":{status:"DANGER",phone:"+91104"},
 "kenya":{status:"WARNING",phone:"+254202717077"},
-"united states":{status:"SAFE",phone:"18004264791"}
+"united states":{status:"SAFE",phone:"+18004264791"}
 };
 
 const cityMap = {
@@ -216,16 +212,23 @@ const cityMap = {
 
 const popular=["Mumbai 🇮🇳","Delhi 🇮🇳","Paris 🇫🇷","Seoul 🇰🇷","Nairobi 🇰🇪"];
 
+/* 🔥 클릭 즉시 결과 */
+function selectCity(name){
+input.value=name;
+suggestions.innerHTML="";
+let country=cityMap[name.toLowerCase()];
+let obj=data[country] || {status:"WARNING",phone:""};
+render(obj,name);
+}
+
 function showPopular(){
 suggestions.innerHTML="";
 popular.forEach(c=>{
+let name=c.split(" ")[0];
 let d=document.createElement("div");
 d.className="sug";
 d.innerText=c;
-d.onclick=()=>{
-input.value=c.split(" ")[0];
-suggestions.innerHTML="";
-};
+d.onclick=()=>selectCity(name);
 suggestions.appendChild(d);
 });
 }
@@ -239,10 +242,7 @@ if(key.includes(val)){
 let d=document.createElement("div");
 d.className="sug";
 d.innerText=key;
-d.onclick=()=>{
-input.value=key;
-suggestions.innerHTML="";
-};
+d.onclick=()=>selectCity(key);
 suggestions.appendChild(d);
 }
 }
