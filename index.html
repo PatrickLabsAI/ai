@@ -12,10 +12,7 @@
 
 :root {
   --bg: #f5f4f0;
-  --surface: #ffffff;
   --border: #e8e5de;
-  --text: #0f0f0f;
-  --muted: #888;
   --navy: #0B1F3B;
   --safe:#1a7a4a;
   --warn:#a05c00;
@@ -36,7 +33,6 @@ body {
 }
 
 .globe-icon {
-  font-size: 16px;
   animation: spin 6s linear infinite;
 }
 
@@ -157,24 +153,37 @@ h1 {
 
 <script>
 
-// 데이터
-const data = {
-"seoul":{status:"SAFE",risk:"Advanced purification 🇰🇷",phone:"+82-44-201-3114"},
-"tokyo":{status:"SAFE",risk:"Strict standards 🇯🇵",phone:"+81-3-5253-1111"},
-"new york":{status:"SAFE",risk:"EPA regulated 🇺🇸",phone:"+1-212-639-9675"},
-"london":{status:"SAFE",risk:"Regulated 🇬🇧",phone:"+44-20-7946-0000"},
-"delhi":{status:"DANGER",risk:"Contamination 🇮🇳",phone:"+91-11-23792000"},
-"bangkok":{status:"WARNING",risk:"Filtered 🇹🇭",phone:"+66-2-203-9000"}
+// 🌍 국가 기반 데이터 (WHO 구조 참고)
+const countryData = {
+"united states":{status:"SAFE",risk:"EPA regulated 🇺🇸",phone:"+12126399675"},
+"united kingdom":{status:"SAFE",risk:"Strict regulations 🇬🇧",phone:"+442079460000"},
+"japan":{status:"SAFE",risk:"High standards 🇯🇵",phone:"+81353281111"},
+"south korea":{status:"SAFE",risk:"Modern infrastructure 🇰🇷",phone:"+822120"},
+"singapore":{status:"SAFE",risk:"Top quality 🇸🇬",phone:"+6567319000"},
+
+"india":{status:"DANGER",risk:"High contamination risk 🇮🇳",phone:"+911123792000"},
+"indonesia":{status:"DANGER",risk:"Unsafe water 🇮🇩",phone:"+6221500000"},
+"thailand":{status:"WARNING",risk:"Filtered recommended 🇹🇭",phone:"+6622039000"},
+"philippines":{status:"WARNING",risk:"Boil recommended 🇵🇭",phone:"+63286517800"},
+"mexico":{status:"DANGER",risk:"Unsafe to drink 🇲🇽",phone:"+525550901600"}
 };
 
-// 기본 도시
+// 도시 → 국가
+const cityToCountry = {
+"seoul":"south korea",
+"tokyo":"japan",
+"bangkok":"thailand",
+"delhi":"india",
+"bali":"indonesia",
+"new york":"united states",
+"london":"united kingdom"
+};
+
+// 기본 추천
 function showDefaultCities(){
+const cities=["Seoul 🇰🇷","Tokyo 🇯🇵","New York 🇺🇸","London 🇬🇧","Bangkok 🇹🇭","Delhi 🇮🇳"];
 let box=document.getElementById("suggestions");
 box.innerHTML="";
-
-const cities=[
-"Seoul 🇰🇷","Tokyo 🇯🇵","New York 🇺🇸","London 🇬🇧","Bangkok 🇹🇭","Delhi 🇮🇳"
-];
 
 cities.forEach(c=>{
 let div=document.createElement("div");
@@ -193,8 +202,7 @@ function showSuggestions(){
 let input=document.getElementById("location").value.toLowerCase();
 let box=document.getElementById("suggestions");
 box.innerHTML="";
-
-for(let key in data){
+for(let key in cityToCountry){
 if(key.includes(input)){
 let div=document.createElement("div");
 div.className="sug-item";
@@ -210,23 +218,51 @@ box.appendChild(div);
 
 // 결과
 function checkWater(){
-let val=document.getElementById("location").value.toLowerCase();
+let input=document.getElementById("location").value.toLowerCase();
 let result=document.getElementById("result");
 
-if(data[val]){
-let d=data[val];
+let country = cityToCountry[input] || input;
+
+if(countryData[country]){
+render(countryData[country]);
+return;
+}
+
+// API fallback
+fetch(`https://restcountries.com/v3.1/name/${country}`)
+.then(res=>res.json())
+.then(data=>{
+let name=data[0].name.common.toLowerCase();
+
+if(countryData[name]){
+render(countryData[name]);
+}else{
+result.innerHTML="🔄 Water quality is being verified...";
+}
+})
+.catch(()=>{
+result.innerHTML="🔄 Water quality is being verified...";
+});
+}
+
+// 출력
+function render(d){
 let cls="warning";
 if(d.status==="SAFE")cls="safe";
 if(d.status==="DANGER")cls="danger";
 
-result.innerHTML=`
+let dangerBox="";
+if(d.status==="DANGER"){
+dangerBox=`<div style="background:#ffecec;padding:10px;border-radius:10px;margin-bottom:10px;font-weight:600;">
+⚠️ Not safe to drink. Avoid tap water.
+</div>`;
+}
+
+document.getElementById("result").innerHTML=
+`${dangerBox}
 <div class="${cls}"><strong>${d.status}</strong></div>
 <div>${d.risk}</div>
-<div>☎️ ${d.phone}</div>
-`;
-}else{
-result.innerHTML="🔄 Water quality is being verified...";
-}
+<div>📞 <a href="tel:${d.phone}">Call water authority</a></div>`;
 }
 
 // GPS
