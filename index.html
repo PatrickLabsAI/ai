@@ -27,7 +27,7 @@ font-family:'Space Grotesk';
 h1{font-family:'Syne';font-size:28px;color:#0B1F3B;margin:0;}
 h1 span{color:#9aa0a6;}
 
-.tagline{font-size:13px;margin-top:12px;color:#7a7f87;}
+.tagline{font-size:13px;margin-top:14px;color:#7a7f87;}
 
 .gif iframe{
 width:100%;height:200px;border:none;border-radius:14px;margin-top:10px;pointer-events:none;
@@ -47,20 +47,10 @@ border:none;background:#0B1F3B;color:white;font-size:16px;
 margin-top:16px;font-family:'Quicksand';font-size:16px;
 }
 
-/* 📊 차트 스타일 */
-.chart{
-margin-top:18px;
-text-align:left;
-}
+/* 📊 차트 */
+.chart{margin-top:18px;text-align:left;}
 
-.chart h3{
-font-size:14px;
-margin-bottom:8px;
-}
-
-.row{
-margin-bottom:10px;
-}
+.row{margin-bottom:10px;}
 
 .label{
 display:flex;
@@ -80,7 +70,6 @@ overflow:hidden;
 height:100%;
 background:#0B1F3B;
 border-radius:6px;
-transition:width 0.6s ease;
 }
 
 .live{
@@ -116,51 +105,37 @@ margin-left:6px;
 
 <div class="card">
 
-<button onclick="useMyLocation()">📍 Check water near me</button>
+<button onclick="useMyLocation()">Check water near me 💧✨</button>
 
 <div id="result"></div>
 
-<!-- 📊 차트 -->
-<div id="chart" class="chart">
+<!-- 📊 안전 국가 차트 -->
+<div class="chart">
+<b>Top Safe Countries <span class="live">LIVE</span></b>
 
-<h3>Global Water Status <span class="live">LIVE</span></h3>
-
-<!-- SAFE -->
 <div class="row">
-<div class="label">🇯🇵 Tokyo <span>90%</span></div>
-<div class="bar"><div class="fill" style="width:90%"></div></div>
+<div class="label">🇨🇭 Switzerland <span>95%</span></div>
+<div class="bar"><div class="fill" style="width:95%"></div></div>
 </div>
 
 <div class="row">
-<div class="label">🇰🇷 Seoul <span>88%</span></div>
-<div class="bar"><div class="fill" style="width:88%"></div></div>
+<div class="label">🇯🇵 Japan <span>93%</span></div>
+<div class="bar"><div class="fill" style="width:93%"></div></div>
 </div>
 
 <div class="row">
-<div class="label">🇨🇭 Zurich <span>92%</span></div>
+<div class="label">🇰🇷 South Korea <span>92%</span></div>
 <div class="bar"><div class="fill" style="width:92%"></div></div>
 </div>
 
-<!-- WARNING -->
 <div class="row">
-<div class="label">🇹🇭 Bangkok <span>60%</span></div>
-<div class="bar"><div class="fill" style="width:60%"></div></div>
+<div class="label">🇩🇪 Germany <span>91%</span></div>
+<div class="bar"><div class="fill" style="width:91%"></div></div>
 </div>
 
 <div class="row">
-<div class="label">🇰🇪 Nairobi <span>55%</span></div>
-<div class="bar"><div class="fill" style="width:55%"></div></div>
-</div>
-
-<!-- DANGER -->
-<div class="row">
-<div class="label">🇮🇳 India <span>30%</span></div>
-<div class="bar"><div class="fill" style="width:30%"></div></div>
-</div>
-
-<div class="row">
-<div class="label">🇳🇬 Nigeria <span>25%</span></div>
-<div class="bar"><div class="fill" style="width:25%"></div></div>
+<div class="label">🇨🇦 Canada <span>90%</span></div>
+<div class="bar"><div class="fill" style="width:90%"></div></div>
 </div>
 
 </div>
@@ -170,33 +145,33 @@ margin-left:6px;
 
 <script>
 
-const result = document.getElementById("result");
-const chart = document.getElementById("chart");
+const result=document.getElementById("result");
+let lastResult="";
+let loading=false;
 
-let isLoading = false;
-let lastResult = "";
-
-/* 🌍 데이터 */
+/* 데이터 */
 const data={
 "south korea":{status:"SAFE",phone:"+821339"},
 "japan":{status:"SAFE",phone:"+81119"},
-"france":{status:"SAFE",phone:"+3315"},
-"united states":{status:"SAFE",phone:"+18004264791"},
+"germany":{status:"SAFE",phone:"+491123"},
+"switzerland":{status:"SAFE",phone:"+41446221111"},
+"canada":{status:"SAFE",phone:"+18005671234"},
 "india":{status:"DANGER",phone:"+91104"},
-"vietnam":{status:"WARNING",phone:"+84908115678"},
-"kenya":{status:"WARNING",phone:"+254202717077"},
 "nigeria":{status:"DANGER",phone:"+2347000000000"},
 "global":{status:"WARNING",phone:""}
 };
 
+/* 🔥 국가 정규화 */
 function normalizeCountry(name){
 name=name.toLowerCase();
 
 if(name.includes("korea")) return "south korea";
+if(name.includes("대한민국")) return "south korea";
 if(name.includes("japan")) return "japan";
+if(name.includes("germany")) return "germany";
+if(name.includes("switzerland")) return "switzerland";
+if(name.includes("canada")) return "canada";
 if(name.includes("india")) return "india";
-if(name.includes("vietnam")) return "vietnam";
-if(name.includes("kenya")) return "kenya";
 if(name.includes("nigeria")) return "nigeria";
 
 return name;
@@ -204,25 +179,23 @@ return name;
 
 function render(obj,place){
 
-chart.style.order = "2"; // 🔥 차트 아래로 이동
-
-let explanation =
+let text =
 obj.status==="SAFE"
 ? "✅ Safe tap water. No boiling needed."
 : obj.status==="DANGER"
 ? "🚫 Unsafe water. Do NOT drink."
 : "⚠️ Boil or filter before drinking.";
 
-lastResult = place + " - " + obj.status;
+lastResult=place+" - "+obj.status;
 
-result.innerHTML = `
+result.innerHTML=`
 <b>${place}</b><br><br>
 <b>${obj.status}</b><br>
-${explanation}<br><br>
+${text}<br><br>
 
-📌 Local pipe conditions may vary.<br><br>
+📌 Local pipes & buildings may affect quality.<br><br>
 
-${obj.phone ? `📞 <a href="tel:${obj.phone}">Call water authority</a><br><br>` : ""}
+${obj.phone?`📞 <a href="tel:${obj.phone}">Call water authority</a><br><br>`:""}
 
 <button onclick="shareResult()">Share 🔗</button>
 `;
@@ -230,9 +203,8 @@ ${obj.phone ? `📞 <a href="tel:${obj.phone}">Call water authority</a><br><br>`
 
 function useMyLocation(){
 
-if(isLoading) return; // 🔥 중복 클릭 방지
-
-isLoading = true;
+if(loading) return;
+loading=true;
 
 result.innerHTML="📡 Checking water quality...";
 
@@ -240,41 +212,41 @@ navigator.geolocation.getCurrentPosition(async(pos)=>{
 
 try{
 
-let res = await fetch(
+let res=await fetch(
 `https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`
 );
 
-let loc = await res.json();
+let loc=await res.json();
 
-let countryRaw = loc.address.country || "global";
-let country = normalizeCountry(countryRaw);
+let rawCountry=loc.address.country || "";
+let country=normalizeCountry(rawCountry);
 
-let place =
+let place=
 loc.address.city ||
 loc.address.town ||
 loc.address.state ||
-countryRaw;
+rawCountry;
 
 if(!data[country]) country="global";
 
-render(data[country], place);
+render(data[country],place);
 
-}catch(e){
-result.innerHTML="❌ Failed to load data";
+}catch{
+result.innerHTML="❌ Failed to load";
 }
 
-isLoading = false;
+loading=false;
 
 },()=>{
 result.innerHTML="❌ Location permission denied";
-isLoading = false;
+loading=false;
 });
 }
 
 function shareResult(){
 navigator.share
 ? navigator.share({text:lastResult})
-: (navigator.clipboard.writeText(lastResult), alert("Copied!"));
+: (navigator.clipboard.writeText(lastResult),alert("Copied!"));
 }
 
 </script>
