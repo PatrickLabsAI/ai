@@ -9,179 +9,27 @@
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-
 :root{
---bg:#f5f4f0;
---surface:#ffffff;
---border:#e8e5de;
---text:#0f0f0f;
---muted:#888;
---navy:#0B1F3B;
-
---safe:#1a7a4a;
---warn:#a05c00;
---danger:#c0272d;
+--bg:#f5f4f0;--border:#e8e5de;--text:#0f0f0f;--muted:#888;--navy:#0B1F3B;
+--safe:#1a7a4a;--warn:#a05c00;--danger:#c0272d;
 }
-
-body{
-font-family:'Instrument Sans',sans-serif;
-background:var(--bg);
-color:var(--text);
-}
-
-/* TOP */
-.topbar{
-border-bottom:1px solid var(--border);
-padding:13px 20px;
-display:flex;
-justify-content:space-between;
-background:white;
-}
-
-.topbar-brand{
-font-family:'Syne';
-font-size:12px;
-letter-spacing:0.1em;
-color:var(--muted);
-}
-
-.globe-icon{
-font-size:16px;
-animation:spin 6s linear infinite;
-}
-
-@keyframes spin{
-from{transform:rotate(0)}
-to{transform:rotate(360deg)}
-}
-
-.container{
-max-width:460px;
-margin:auto;
-padding:36px 20px;
-}
-
-.header-eyebrow{
-font-size:11px;
-letter-spacing:0.1em;
-color:var(--muted);
-}
-
-h1{
-font-family:'Syne';
-font-size:30px;
-color:var(--navy);
-margin:10px 0;
-}
-
-h1 span{opacity:.4;}
-
-.data-source{
-font-size:12px;
-color:var(--muted);
-}
-
-.card{
-background:white;
-border-radius:20px;
-border:1px solid var(--border);
-margin-top:25px;
-}
-
-.input-section{
-padding:18px;
-position:relative;
-}
-
-.input-wrap{position:relative;}
-
-.input-icon{
-position:absolute;
-left:12px;
-top:50%;
-transform:translateY(-50%);
-}
-
-#location{
-width:100%;
-padding:14px 14px 14px 36px;
-border-radius:12px;
-border:1px solid var(--border);
-background:var(--bg);
-}
-
-/* 자동완성 */
-#suggestions{
-position:absolute;
-width:100%;
-background:white;
-border-radius:12px;
-border:1px solid var(--border);
-margin-top:5px;
-z-index:10;
-}
-
-.sug-item{
-padding:10px;
-cursor:pointer;
-}
-
-.sug-item:hover{
-background:#f0f0f0;
-}
-
-/* 버튼 */
-.btn-check{
-width:calc(100% - 36px);
-margin:0 18px 10px;
-padding:14px;
-border-radius:12px;
-border:none;
-background:var(--navy);
-color:white;
-font-weight:600;
-cursor:pointer;
-display:flex;
-justify-content:center;
-align-items:center;
-gap:8px;
-}
-
-.btn-secondary{
-background:#eee;
-color:#333;
-}
-
-/* 물 애니 */
-.btn-water{
-width:16px;
-height:16px;
-fill:white;
-animation:waterFlow 1.8s ease-in-out infinite;
-}
-
-@keyframes waterFlow{
-0%{transform:translateY(0);opacity:.8;}
-50%{transform:translateY(3px);opacity:1;}
-100%{transform:translateY(0);opacity:.8;}
-}
-
-#result{
-margin:0 18px 18px;
-font-size:15px;
-line-height:1.5;
-}
-
-.safe{color:var(--safe);}
-.warning{color:var(--warn);}
-.danger{color:var(--danger);}
-
-.footer{
-text-align:center;
-font-size:11px;
-color:#aaa;
-margin-top:20px;
-}
+body{font-family:'Instrument Sans',sans-serif;background:var(--bg);}
+.topbar{border-bottom:1px solid var(--border);padding:13px 20px;display:flex;justify-content:space-between;background:white;}
+.topbar-brand{font-family:'Syne';font-size:12px;color:var(--muted);}
+.globe-icon{animation:spin 6s linear infinite;}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.container{max-width:460px;margin:auto;padding:36px 20px;}
+h1{font-family:'Syne';font-size:30px;color:var(--navy);}
+.card{background:white;border-radius:20px;border:1px solid var(--border);margin-top:25px;}
+.input-section{padding:18px;}
+#location{width:100%;padding:14px;border-radius:12px;border:1px solid var(--border);}
+#suggestions{background:white;border-radius:12px;border:1px solid var(--border);margin-top:5px;}
+.sug-item{padding:10px;cursor:pointer;}
+.sug-item:hover{background:#f0f0f0;}
+.btn-check{width:90%;margin:10px auto;padding:14px;border-radius:12px;border:none;background:var(--navy);color:white;cursor:pointer;}
+.btn-secondary{background:#0B1F3B;}
+#result{margin:15px;}
+.safe{color:var(--safe);} .warning{color:var(--warn);} .danger{color:var(--danger);}
 </style>
 </head>
 
@@ -193,64 +41,82 @@ margin-top:20px;
 </div>
 
 <div class="container">
-
-<div>
-<div class="header-eyebrow">Water Safety</div>
-<h1>Can I drink<br><span>this water?</span></h1>
-<div class="data-source">Based on WHO, CDC, UNICEF & local authorities</div>
-</div>
+<h1>Can I drink this water?</h1>
 
 <div class="card">
 <div class="input-section">
-<div class="input-wrap">
-<span class="input-icon">🔍</span>
-<input id="location" placeholder="Enter city or country..." oninput="showSuggestions()" />
+<input id="location" placeholder="Enter city or country..." oninput="showSuggestions()"/>
 <div id="suggestions"></div>
 </div>
-</div>
 
-<button class="btn-check" onclick="checkWater()">
-<span>Check Water</span>
-<svg class="btn-water" viewBox="0 0 24 24">
-<path d="M12 2C12 2 7 8 7 12a5 5 0 0 0 10 0c0-4-5-10-5-10z"/>
-</svg>
-</button>
-
-<button class="btn-check btn-secondary" onclick="useMyLocation()">
-📍 Use My Location
-</button>
+<button class="btn-check" onclick="checkWater()">Check Water</button>
+<button class="btn-check btn-secondary" onclick="useMyLocation()">Use My Location 📍</button>
 
 <div id="result"></div>
 </div>
-
-<div class="footer">
-Data is for guidance only. Always verify locally.
-</div>
-
 </div>
 
 <script>
-// 데이터 (예시 확장 가능)
+
+// 🌍 데이터 (확장됨)
 const data = {
-"seoul":{status:"SAFE",risk:"Advanced purification systems"},
-"tokyo":{status:"SAFE",risk:"Strict government standards"},
-"bangkok":{status:"WARNING",risk:"Use filtered water"},
-"bali":{status:"DANGER",risk:"Bacterial contamination"},
-"delhi":{status:"DANGER",risk:"High contamination risk"},
-"new york":{status:"SAFE",risk:"EPA regulated"},
-"london":{status:"SAFE",risk:"Highly regulated supply"},
-"paris":{status:"SAFE",risk:"Safe but taste varies"}
+"seoul":{status:"SAFE",risk:"Advanced system 🇰🇷"},
+"tokyo":{status:"SAFE",risk:"High quality 🇯🇵"},
+"osaka":{status:"SAFE",risk:"Clean supply 🇯🇵"},
+"bangkok":{status:"WARNING",risk:"Filtered recommended 🇹🇭"},
+"singapore":{status:"SAFE",risk:"Top tier 🇸🇬"},
+"new york":{status:"SAFE",risk:"EPA regulated 🇺🇸"},
+"los angeles":{status:"SAFE",risk:"Safe 🇺🇸"},
+"london":{status:"SAFE",risk:"Regulated 🇬🇧"},
+"paris":{status:"SAFE",risk:"Safe 🇫🇷"},
+"berlin":{status:"SAFE",risk:"Clean 🇩🇪"},
+"rome":{status:"SAFE",risk:"Ancient aqueduct 🇮🇹"},
+"madrid":{status:"SAFE",risk:"Safe 🇪🇸"},
+"toronto":{status:"SAFE",risk:"Clean 🇨🇦"},
+"sydney":{status:"SAFE",risk:"High quality 🇦🇺"},
+"melbourne":{status:"SAFE",risk:"Clean 🇦🇺"},
+"dubai":{status:"SAFE",risk:"Desalinated 🇦🇪"},
+"delhi":{status:"DANGER",risk:"Contamination 🇮🇳"},
+"mumbai":{status:"WARNING",risk:"Boil advised 🇮🇳"},
+"jakarta":{status:"DANGER",risk:"Unsafe 🇮🇩"},
+"bali":{status:"DANGER",risk:"Bacteria 🇮🇩"},
+"manila":{status:"WARNING",risk:"Boil 🇵🇭"},
+"cairo":{status:"WARNING",risk:"Mixed 🇪🇬"},
+"lagos":{status:"DANGER",risk:"Unsafe 🇳🇬"},
+"nairobi":{status:"WARNING",risk:"Filtered 🇰🇪"},
+"rio":{status:"WARNING",risk:"Boil 🇧🇷"},
+"mexico city":{status:"DANGER",risk:"Unsafe 🇲🇽"},
+
+// 국가
+"korea":{status:"SAFE",risk:"Modern 🇰🇷"},
+"japan":{status:"SAFE",risk:"High quality 🇯🇵"},
+"usa":{status:"SAFE",risk:"Regulated 🇺🇸"},
+"uk":{status:"SAFE",risk:"Safe 🇬🇧"},
+"france":{status:"SAFE",risk:"Safe 🇫🇷"},
+"germany":{status:"SAFE",risk:"Clean 🇩🇪"},
+"italy":{status:"SAFE",risk:"Safe 🇮🇹"},
+"spain":{status:"SAFE",risk:"Safe 🇪🇸"},
+"canada":{status:"SAFE",risk:"Clean 🇨🇦"},
+"australia":{status:"SAFE",risk:"Clean 🇦🇺"},
+"uae":{status:"SAFE",risk:"Desalinated 🇦🇪"},
+"india":{status:"DANGER",risk:"Unsafe 🇮🇳"},
+"indonesia":{status:"DANGER",risk:"Unsafe 🇮🇩"},
+"philippines":{status:"WARNING",risk:"Boil 🇵🇭"},
+"egypt":{status:"WARNING",risk:"Mixed 🇪🇬"},
+"nigeria":{status:"DANGER",risk:"Unsafe 🇳🇬"},
+"kenya":{status:"WARNING",risk:"Filtered 🇰🇪"},
+"brazil":{status:"WARNING",risk:"Boil 🇧🇷"},
+"mexico":{status:"DANGER",risk:"Unsafe 🇲🇽"}
 };
 
 // 자동완성
 function showSuggestions(){
-const input=document.getElementById("location").value.toLowerCase();
-const box=document.getElementById("suggestions");
+let input=document.getElementById("location").value.toLowerCase();
+let box=document.getElementById("suggestions");
 box.innerHTML="";
-
 for(let key in data){
 if(key.includes(input)){
-const div=document.createElement("div");
+let div=document.createElement("div");
 div.className="sug-item";
 div.innerText=key;
 div.onclick=()=>{
@@ -264,51 +130,41 @@ box.appendChild(div);
 
 // 결과
 function checkWater(){
-const val=document.getElementById("location").value.toLowerCase();
-const result=document.getElementById("result");
+let val=document.getElementById("location").value.toLowerCase();
+let result=document.getElementById("result");
 
 if(!data[val]){
-result.innerHTML="Checking water quality...";
+result.innerHTML="🔄 Water quality is being verified...";
 return;
 }
 
-const d=data[val];
+let d=data[val];
 let cls="warning";
 if(d.status==="SAFE")cls="safe";
 if(d.status==="DANGER")cls="danger";
 
-result.innerHTML=`
-<div class="${cls}"><strong>${d.status}</strong></div>
-<div>${d.risk}</div>
-`;
+result.innerHTML=`<div class="${cls}"><strong>${d.status}</strong></div><div>${d.risk}</div>`;
 }
 
-// 📍 GPS 기능
+// GPS
 function useMyLocation(){
-const result=document.getElementById("result");
-result.innerHTML="Getting your location...";
+let result=document.getElementById("result");
+result.innerHTML="📡 Getting location...";
 
-navigator.geolocation.getCurrentPosition(async (pos)=>{
-const lat=pos.coords.latitude;
-const lon=pos.coords.longitude;
+navigator.geolocation.getCurrentPosition(async(pos)=>{
+let lat=pos.coords.latitude;
+let lon=pos.coords.longitude;
 
-try{
-const res=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
-const dataLoc=await res.json();
+let res=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+let loc=await res.json();
 
-const city = dataLoc.address.city || dataLoc.address.town || dataLoc.address.country;
-
+let city = loc.address.city || loc.address.town || loc.address.country;
 document.getElementById("location").value=city.toLowerCase();
+
 checkWater();
-
-}catch(e){
-result.innerHTML="Location found, but lookup failed.";
-}
-
-}, ()=>{
-result.innerHTML="Location permission denied.";
 });
 }
+
 </script>
 
 </body>
