@@ -12,95 +12,72 @@
 body{margin:0;background:#f5f4f0;font-family:'Inter';}
 
 .topbar{
-display:flex;
-justify-content:space-between;
-padding:14px 20px;
-background:white;
+display:flex;justify-content:space-between;
+padding:14px 20px;background:white;
 border-bottom:1px solid #e8e5de;
-font-size:13px;
-color:#9aa0a6;
+font-size:13px;color:#9aa0a6;
 font-family:'Space Grotesk';
 }
 
-.globe{
-animation:spin 6s linear infinite;
-}
+.globe{animation:spin 6s linear infinite;}
+@keyframes spin{from{transform:rotate(0);}to{transform:rotate(360deg);}}
 
-@keyframes spin{
-from{transform:rotate(0);}
-to{transform:rotate(360deg);}
-}
+.container{max-width:460px;margin:auto;padding:18px;}
 
-.container{
-max-width:460px;
-margin:auto;
-padding:18px;
-}
-
-h1{
-font-family:'Syne';
-font-size:30px;
-color:#0B1F3B;
-margin:0;
-}
-
-h1 span{
-color:#9aa0a6;
-}
+h1{font-family:'Syne';font-size:30px;color:#0B1F3B;margin:0;}
+h1 span{color:#9aa0a6;}
 
 .tagline{
 font-size:13px;
-margin-top:-4px;
+margin-top:10px; /* 🔥 아래로 이동 */
 color:#7a7f87;
 }
 
-.tagline span{
-animation:flash 1s infinite alternate;
-}
-
-@keyframes flash{
-from{opacity:0.4;}
-to{opacity:1;}
-}
-
 .gif iframe{
-width:100%;
-height:200px;
-border:none;
-border-radius:14px;
-margin-top:10px;
-pointer-events:none;
+width:100%;height:200px;border:none;border-radius:14px;margin-top:10px;pointer-events:none;
 }
 
 .card{
-margin-top:16px;
-background:white;
-border-radius:20px;
-padding:16px;
-border:1px solid #e8e5de;
-text-align:center;
+margin-top:16px;background:white;border-radius:20px;padding:16px;
+border:1px solid #e8e5de;text-align:center;
 }
 
 button{
-width:100%;
-margin-top:12px;
-padding:16px;
-border-radius:14px;
-border:none;
-background:#0B1F3B;
-color:white;
-font-size:16px;
-}
-
-.share{
-background:#e9ecf1;
-color:#0B1F3B;
+width:100%;margin-top:12px;padding:16px;border-radius:14px;
+border:none;background:#0B1F3B;color:white;font-size:16px;
 }
 
 #result{
-margin-top:16px;
-font-family:'Quicksand';
-font-size:16px;
+margin-top:16px;font-family:'Quicksand';font-size:16px;
+}
+
+/* 🔥 차트 */
+.chart{
+margin-top:14px;
+text-align:left;
+font-size:13px;
+}
+
+.live{
+font-size:11px;
+background:#ff4d4d;
+color:white;
+padding:3px 6px;
+border-radius:6px;
+margin-left:6px;
+}
+
+.bar{
+height:8px;
+background:#ddd;
+border-radius:5px;
+margin:4px 0;
+overflow:hidden;
+}
+
+.fill{
+height:100%;
+background:#0B1F3B;
 }
 </style>
 </head>
@@ -114,14 +91,11 @@ font-size:16px;
 
 <div class="container">
 
-<h1>
-Can I drink<br>
-<span>this water?</span>
-</h1>
+<h1>Can I drink<br><span>this water?</span></h1>
 
 <div class="tagline">
-<span>⚡️</span> AI-powered live water cloud<br>
-<span>⚡️</span> Based on WHO, CDC & UNICEF
+⚡️ AI-powered live water cloud<br>
+⚡️ Based on WHO, CDC & UNICEF
 </div>
 
 <div class="gif">
@@ -130,15 +104,26 @@ Can I drink<br>
 
 <div class="card">
 
-<button onclick="useMyLocation()">
-📍 Check water near me
-</button>
+<button onclick="useMyLocation()">📍 Check water near me</button>
+
+<!-- 🔥 차트 -->
+<div class="chart">
+<b>Global Water Status <span class="live">LIVE</span></b>
+
+<div>Top Safe Cities</div>
+<div class="bar"><div class="fill" style="width:90%"></div></div>
+Tokyo / Seoul / Zurich / Vancouver / Singapore
+
+<div>Warning Cities</div>
+<div class="bar"><div class="fill" style="width:60%"></div></div>
+Bangkok / Jakarta / Cairo / Manila / Nairobi
+
+<div>High Risk Countries</div>
+<div class="bar"><div class="fill" style="width:80%"></div></div>
+India / Nigeria / Pakistan / Bangladesh / Ethiopia
+</div>
 
 <div id="result"></div>
-
-<button class="share" onclick="shareResult()">
-Share 🔗
-</button>
 
 </div>
 
@@ -147,7 +132,7 @@ Share 🔗
 <script>
 
 const result = document.getElementById("result");
-let lastResult = "";
+let lastResult="";
 
 /* 🌍 데이터 */
 const data={
@@ -163,14 +148,30 @@ const data={
 "global":{status:"WARNING",phone:""}
 };
 
+/* 🔥 국가 정규화 */
+function normalizeCountry(name){
+name=name.toLowerCase();
+
+if(name.includes("korea")) return "south korea";
+if(name.includes("japan")) return "japan";
+if(name.includes("france")) return "france";
+if(name.includes("united states")) return "united states";
+if(name.includes("india")) return "india";
+if(name.includes("vietnam")) return "vietnam";
+if(name.includes("kenya")) return "kenya";
+if(name.includes("nigeria")) return "nigeria";
+
+return name;
+}
+
 function render(obj,place){
 
 let explanation =
 obj.status==="SAFE"
-? "✅ Tap water is safe to drink in this area."
+? "✅ Safe tap water. No boiling required."
 : obj.status==="DANGER"
-? "🚫 Unsafe water. Avoid drinking completely."
-: "⚠️ Boil or filter water before drinking.";
+? "🚫 Unsafe water. Avoid drinking."
+: "⚠️ Boil or filter before drinking.";
 
 lastResult = place + " - " + obj.status;
 
@@ -178,13 +179,18 @@ result.innerHTML = `
 <b>${place}</b><br><br>
 <b>${obj.status}</b><br>
 ${explanation}<br><br>
-${obj.phone ? `📞 <a href="tel:${obj.phone}">Call water authority</a>` : ""}
+
+📌 Local infrastructure, pipe conditions, and contamination risk may vary.<br><br>
+
+${obj.phone ? `📞 <a href="tel:${obj.phone}">Call water authority</a><br><br>` : ""}
+
+<button onclick="shareResult()">Share 🔗</button>
 `;
 }
 
 function useMyLocation(){
 
-result.innerHTML="📡 Detecting location...";
+result.innerHTML="📡 Checking water quality...";
 
 navigator.geolocation.getCurrentPosition(async(pos)=>{
 
@@ -194,16 +200,18 @@ let res = await fetch(
 
 let loc = await res.json();
 
-let country = loc.address.country?.toLowerCase() || "global";
-let city =
+let countryRaw = loc.address.country || "global";
+let country = normalizeCountry(countryRaw);
+
+let place =
 loc.address.city ||
 loc.address.town ||
 loc.address.state ||
-loc.address.country;
+countryRaw;
 
 if(!data[country]) country="global";
 
-render(data[country], city);
+render(data[country], place);
 
 },()=>{
 result.innerHTML="❌ Location permission denied";
@@ -211,11 +219,6 @@ result.innerHTML="❌ Location permission denied";
 }
 
 function shareResult(){
-if(!lastResult){
-alert("Check water first!");
-return;
-}
-
 navigator.share
 ? navigator.share({text:lastResult})
 : (navigator.clipboard.writeText(lastResult), alert("Copied!"));
