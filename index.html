@@ -15,7 +15,6 @@ body {
   font-family:'Inter', sans-serif;
 }
 
-/* 상단 */
 .topbar{
   display:flex;
   justify-content:space-between;
@@ -43,7 +42,6 @@ body {
   padding:20px;
 }
 
-/* 제목 */
 h1{
   font-family:'Syne';
   font-size:34px;
@@ -55,23 +53,21 @@ h1 span{
   color:#9aa0a6;
 }
 
-/* 브랜드 문구 */
 .tagline{
   margin-top:8px;
   font-size:13px;
   color:#7a7f87;
 }
 
-/* GIF */
 .gif iframe{
   width:100%;
   height:200px;
   border:none;
   border-radius:14px;
   margin-top:12px;
+  pointer-events:none; /* 🔥 클릭 차단 */
 }
 
-/* 카드 */
 .card{
   margin-top:18px;
   background:white;
@@ -127,9 +123,15 @@ button{
   cursor:pointer;
 }
 
+.share{
+  background:#e9ecf1;
+  color:#0B1F3B;
+}
+
 #result{
   margin-top:14px;
   font-size:15px;
+  line-height:1.5;
 }
 </style>
 </head>
@@ -150,7 +152,7 @@ button{
 
 <div class="tagline">
 ⚡️ AI-powered water safety intelligence platform<br>
-Based on WHO, CDC, UNICEF & global data
+⚡️ Based on WHO, CDC, UNICEF & global data
 </div>
 
 <div class="gif">
@@ -172,6 +174,8 @@ Based on WHO, CDC, UNICEF & global data
 
 <div id="result"></div>
 
+<button class="share" onclick="shareResult()">Share this result 🔗</button>
+
 </div>
 
 </div>
@@ -179,17 +183,18 @@ Based on WHO, CDC, UNICEF & global data
 <script>
 
 let isLoading=false;
+let lastResult="";
 
 const input = document.getElementById("locationInput");
 const result = document.getElementById("result");
 const suggestions = document.getElementById("suggestions");
 
 const data = {
-"south korea":"SAFE",
-"france":"SAFE",
-"india":"DANGER",
-"kenya":"WARNING",
-"united states":"SAFE"
+"south korea":{status:"SAFE",phone:"1339"},
+"france":{status:"SAFE",phone:"15"},
+"india":{status:"DANGER",phone:"102"},
+"kenya":{status:"WARNING",phone:"+254 20 2717077"},
+"united states":{status:"SAFE",phone:"1-800-426-4791"}
 };
 
 const cityMap = {
@@ -244,16 +249,26 @@ function normalize(v){
 return v.toLowerCase().trim();
 }
 
-function render(status,isLoc=false){
+function render(obj,locationName,isLoc=false){
 isLoading=false;
 
-let text = status==="SAFE" ? "Safe to drink" :
-status==="DANGER" ? "Not safe to drink" :
-"Boil or filter recommended";
+let explanation =
+obj.status==="SAFE"
+? "Water is treated and monitored with modern purification systems. Generally safe for drinking without boiling."
+: obj.status==="DANGER"
+? "Water may contain bacteria or contaminants. Avoid drinking tap water. Use bottled or filtered water."
+: "Water quality varies. Boiling or filtering is strongly recommended before drinking.";
 
-let extra = isLoc ? "<div>📍 Based on nearby infrastructure (~1km)</div>" : "";
+let extra = isLoc ? "<div>📍 Within ~1km radius, infrastructure suggests similar water conditions</div>" : "";
 
-result.innerHTML=`<b>${status}</b><br>${text}${extra}`;
+lastResult = `${locationName}: ${obj.status}`;
+
+result.innerHTML=`
+<b>${obj.status}</b><br>
+${explanation}<br><br>
+📞 <a href="tel:${obj.phone}">Call local water authority</a>
+${extra}
+`;
 }
 
 function checkWater(){
@@ -267,8 +282,8 @@ let val=normalize(input.value);
 let country=cityMap[val]||val;
 
 setTimeout(()=>{
-let status=data[country] || "WARNING";
-render(status);
+let obj=data[country] || {status:"WARNING",phone:""};
+render(obj,input.value);
 },700);
 }
 
@@ -296,9 +311,9 @@ input.value = city;
 let val=normalize(city);
 let country=cityMap[val]||val;
 
-let status=data[country] || "WARNING";
+let obj=data[country] || {status:"WARNING",phone:""};
 
-render(status,true);
+render(obj,city,true);
 
 }catch{
 isLoading=false;
@@ -309,6 +324,24 @@ result.innerHTML="❌ Location failed";
 isLoading=false;
 result.innerHTML="❌ Location permission denied";
 });
+}
+
+function shareResult(){
+if(!lastResult){
+alert("Check water first!");
+return;
+}
+
+if(navigator.share){
+navigator.share({
+title:"Water Safety",
+text:lastResult,
+url:window.location.href
+});
+}else{
+navigator.clipboard.writeText(lastResult);
+alert("Copied to clipboard!");
+}
 }
 
 </script>
