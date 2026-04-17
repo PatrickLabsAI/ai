@@ -52,38 +52,23 @@ h1 span{
   color:#9aa0a6;
 }
 
-/* 🔥 WHO 문구 복구 */
 .subtitle{
   margin-top:12px;
   font-size:13px;
   color:#b0b3b8;
 }
 
-/* 🌊 진짜 폭포 애니메이션 */
+/* 🌊 GIF */
 .waterfall{
-  position:relative;
-  height:30px;
-  margin-top:10px;
+  margin-top:12px;
 }
 
-.drop{
-  position:absolute;
-  top:0;
-  font-size:18px;
-  opacity:0;
-  animation:waterfall 2s infinite;
+.waterfall img{
+  width:100%;
+  border-radius:12px;
 }
 
-.drop:nth-child(1){left:10%; animation-delay:0s;}
-.drop:nth-child(2){left:40%; animation-delay:0.4s;}
-.drop:nth-child(3){left:70%; animation-delay:0.8s;}
-
-@keyframes waterfall{
-  0%{transform:translateY(0); opacity:0;}
-  30%{opacity:1;}
-  100%{transform:translateY(25px); opacity:0;}
-}
-
+/* 카드 */
 .card{
   margin-top:30px;
   background:white;
@@ -161,16 +146,13 @@ button{
   <span>this water?</span>
 </h1>
 
-<!-- ✅ WHO 문구 -->
 <div class="subtitle">
   Based on WHO, CDC, UNICEF & local authorities
 </div>
 
-<!-- 🌊 폭포 -->
+<!-- 🌊 Giphy 폭포 -->
 <div class="waterfall">
-  <span class="drop">💧</span>
-  <span class="drop">💧</span>
-  <span class="drop">💧</span>
+  <img src="https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif">
 </div>
 
 <div class="card">
@@ -193,6 +175,8 @@ button{
 </div>
 
 <script>
+
+let isLoading = false;
 
 // 데이터
 const data = {
@@ -264,6 +248,8 @@ return i.toLowerCase().trim();
 
 // 결과
 function render(d, isLocation=false){
+isLoading = false;
+
 let color="#a05c00";
 if(d.status==="SAFE") color="#1a7a4a";
 if(d.status==="DANGER") color="#c0272d";
@@ -284,24 +270,36 @@ ${extra}
 
 // 검색
 function checkWater(){
+if(isLoading) return;
+isLoading = true;
+
 document.getElementById("suggestions").innerHTML="";
+document.getElementById("result").innerHTML="💧 Checking...";
+
 let input=document.getElementById("location").value;
 let country=cityMap[normalize(input)]||normalize(input);
 
+setTimeout(()=>{
 if(data[country]){
 render(data[country]);
 }else{
-document.getElementById("result").innerHTML="💧 Checking...";
+isLoading=false;
+document.getElementById("result").innerHTML="💧 Water quality is being verified...";
 }
+},800);
 }
 
 // GPS
 function useMyLocation(){
+if(isLoading) return;
+isLoading = true;
 
 document.getElementById("suggestions").innerHTML="";
+document.getElementById("result").innerHTML="📡 Getting location...";
 
 navigator.geolocation.getCurrentPosition(async(pos)=>{
 
+try{
 let res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
 let loc = await res.json();
 
@@ -314,7 +312,13 @@ let country = cityMap[normalize(city)] || normalize(city);
 if(data[country]){
 render(data[country], true);
 }else{
-document.getElementById("result").innerHTML="💧 Checking...";
+isLoading=false;
+document.getElementById("result").innerHTML="💧 Water quality is being verified...";
+}
+
+}catch(e){
+isLoading=false;
+document.getElementById("result").innerHTML="❌ Location error";
 }
 
 });
