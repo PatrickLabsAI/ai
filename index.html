@@ -42,11 +42,9 @@ body {
   padding:18px;
 }
 
-/* 제목 위치 살짝 위 */
 h1{
   font-family:'Syne';
   font-size:34px;
-  line-height:1.1;
   margin-top:5px;
   color:#0B1F3B;
 }
@@ -55,9 +53,9 @@ h1 span{
   color:#9aa0a6;
 }
 
-/* ⚡ 반짝 */
+/* 🔥 문구 위로 */
 .tagline{
-  margin-top:6px;
+  margin-top:2px;
   font-size:13px;
   color:#7a7f87;
 }
@@ -76,7 +74,7 @@ h1 span{
   height:200px;
   border:none;
   border-radius:14px;
-  margin-top:12px;
+  margin-top:10px;
   pointer-events:none;
 }
 
@@ -140,7 +138,6 @@ button{
   color:#0B1F3B;
 }
 
-/* 결과 귀엽게 */
 #result{
   margin-top:14px;
   font-family:'Quicksand';
@@ -196,13 +193,13 @@ button{
 
 <script>
 
-let lastResult="";
-let currentLocation="";
-
 const input = document.getElementById("locationInput");
 const result = document.getElementById("result");
 const suggestions = document.getElementById("suggestions");
 
+let lastResult="";
+
+/* 🔥 데이터 */
 const data = {
 "south korea":{status:"SAFE",phone:"1339"},
 "france":{status:"SAFE",phone:"15"},
@@ -211,8 +208,11 @@ const data = {
 "united states":{status:"SAFE",phone:"18004264791"}
 };
 
+/* 🔥 도시/언어 매핑 강화 */
 const cityMap = {
 "seoul":"south korea",
+"서울":"south korea",
+"서울특별시":"south korea",
 "paris":"france",
 "mumbai":"india",
 "delhi":"india",
@@ -222,6 +222,7 @@ const cityMap = {
 
 const popular=["Mumbai 🇮🇳","Delhi 🇮🇳","Paris 🇫🇷","Seoul 🇰🇷","Nairobi 🇰🇪"];
 
+/* 인기 */
 function showPopular(){
 suggestions.innerHTML="";
 popular.forEach(c=>{
@@ -236,9 +237,13 @@ suggestions.appendChild(d);
 });
 }
 
+/* 자동완성 */
 function showSuggestions(){
 let val=input.value.toLowerCase();
 suggestions.innerHTML="";
+
+if(!val){ showPopular(); return; }
+
 for(let key in cityMap){
 if(key.includes(val)){
 let d=document.createElement("div");
@@ -253,6 +258,7 @@ suggestions.appendChild(d);
 }
 }
 
+/* 닫기 */
 function hideSuggestions(e){
 if(!input.contains(e.target)){
 suggestions.innerHTML="";
@@ -267,16 +273,17 @@ function getCountry(val){
 return cityMap[val] || val;
 }
 
+/* 결과 */
 function render(obj,name,isLoc=false){
 
 let explanation =
 obj.status==="SAFE"
 ? "✅ Clean, treated water with strong infrastructure. Safe for daily consumption."
 : obj.status==="DANGER"
-? "🚫 High contamination risk. Avoid tap water. Use bottled or filtered water."
+? "🚫 High contamination risk. Avoid tap water."
 : "⚠️ Water quality varies. Boil or filter before drinking.";
 
-let extra = isLoc ? "<div>📍 Within ~1km radius, similar water conditions apply</div>" : "";
+let extra = isLoc ? "<div>📍 Within ~1km radius, similar conditions apply</div>" : "";
 
 lastResult = `${name}: ${obj.status}`;
 
@@ -288,6 +295,7 @@ ${extra}
 `;
 }
 
+/* 체크 */
 function checkWater(){
 let val=normalize(input.value);
 if(!val){
@@ -301,6 +309,7 @@ let obj=data[country] || {status:"WARNING",phone:""};
 render(obj,input.value);
 }
 
+/* GPS */
 function useMyLocation(){
 
 result.innerHTML="📡 Getting location...";
@@ -336,6 +345,7 @@ result.innerHTML="❌ Permission denied";
 });
 }
 
+/* 공유 */
 function shareResult(){
 if(!lastResult){
 alert("Check water first!");
