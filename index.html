@@ -52,25 +52,36 @@ h1 span{
   color:#9aa0a6;
 }
 
-/* 🌊 폭포 애니메이션 */
-.waterfall{
+/* 🔥 WHO 문구 복구 */
+.subtitle{
   margin-top:12px;
-  font-size:28px;
-  display:flex;
-  gap:6px;
+  font-size:13px;
+  color:#b0b3b8;
+}
+
+/* 🌊 진짜 폭포 애니메이션 */
+.waterfall{
+  position:relative;
+  height:30px;
+  margin-top:10px;
 }
 
 .drop{
-  animation:fall 1.2s infinite;
+  position:absolute;
+  top:0;
+  font-size:18px;
+  opacity:0;
+  animation:waterfall 2s infinite;
 }
 
-.drop:nth-child(2){animation-delay:0.2s;}
-.drop:nth-child(3){animation-delay:0.4s;}
+.drop:nth-child(1){left:10%; animation-delay:0s;}
+.drop:nth-child(2){left:40%; animation-delay:0.4s;}
+.drop:nth-child(3){left:70%; animation-delay:0.8s;}
 
-@keyframes fall{
-  0%{transform:translateY(0); opacity:0.4;}
-  50%{transform:translateY(8px); opacity:1;}
-  100%{transform:translateY(0); opacity:0.4;}
+@keyframes waterfall{
+  0%{transform:translateY(0); opacity:0;}
+  30%{opacity:1;}
+  100%{transform:translateY(25px); opacity:0;}
 }
 
 .card{
@@ -150,7 +161,12 @@ button{
   <span>this water?</span>
 </h1>
 
-<!-- 🌊 애니메이션 폭포 -->
+<!-- ✅ WHO 문구 -->
+<div class="subtitle">
+  Based on WHO, CDC, UNICEF & local authorities
+</div>
+
+<!-- 🌊 폭포 -->
 <div class="waterfall">
   <span class="drop">💧</span>
   <span class="drop">💧</span>
@@ -195,10 +211,9 @@ const cityMap = {
 "nairobi":"kenya"
 };
 
-// 인기
 const popular = ["Mumbai 🇮🇳","Delhi 🇮🇳","Paris 🇫🇷","Seoul 🇰🇷","Nairobi 🇰🇪"];
 
-// 인기 표시
+// 인기
 function showPopular(){
 let box=document.getElementById("suggestions");
 box.innerHTML="";
@@ -233,11 +248,10 @@ box.appendChild(div);
 }
 }
 
-// 👉 자동완성 닫기 핵심
+// 닫기
 function hideSuggestions(e){
 const box = document.getElementById("suggestions");
 const input = document.getElementById("location");
-
 if(!input.contains(e.target)){
   box.innerHTML="";
 }
@@ -255,7 +269,7 @@ if(d.status==="SAFE") color="#1a7a4a";
 if(d.status==="DANGER") color="#c0272d";
 
 let extra = isLocation
-? "<div style='margin-top:8px;'>📍 Within ~1km radius, tap water is generally assessed.</div>"
+? "<div style='margin-top:8px;'>📍 Within ~1km radius, tap water via public system is generally assessed.</div>"
 : "";
 
 document.getElementById("result").innerHTML=
@@ -277,7 +291,7 @@ let country=cityMap[normalize(input)]||normalize(input);
 if(data[country]){
 render(data[country]);
 }else{
-document.getElementById("result").innerHTML="Checking...";
+document.getElementById("result").innerHTML="💧 Checking...";
 }
 }
 
@@ -300,7 +314,7 @@ let country = cityMap[normalize(city)] || normalize(city);
 if(data[country]){
 render(data[country], true);
 }else{
-document.getElementById("result").innerHTML="Checking...";
+document.getElementById("result").innerHTML="💧 Checking...";
 }
 
 });
