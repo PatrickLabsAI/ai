@@ -25,7 +25,6 @@
 body {
   font-family: 'Instrument Sans', sans-serif;
   background: var(--bg);
-  color: var(--text);
 }
 
 .topbar {
@@ -34,13 +33,6 @@ body {
   display: flex;
   justify-content: space-between;
   background: white;
-}
-
-.topbar-brand {
-  font-family: 'Syne';
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  color: var(--muted);
 }
 
 .globe-icon {
@@ -59,24 +51,10 @@ body {
   padding: 36px 20px;
 }
 
-.header-eyebrow {
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  color: var(--muted);
-}
-
 h1 {
   font-family: 'Syne';
   font-size: 30px;
   color: var(--navy);
-  margin: 10px 0;
-}
-
-h1 span { opacity: 0.4; }
-
-.data-source {
-  font-size: 12px;
-  color: var(--muted);
 }
 
 .card {
@@ -91,27 +69,17 @@ h1 span { opacity: 0.4; }
   position: relative;
 }
 
-.input-wrap { position: relative; }
-
-.input-icon {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
 #location {
   width: 100%;
-  padding: 14px 14px 14px 36px;
+  padding: 14px;
   border-radius: 12px;
   border: 1px solid var(--border);
   background: var(--bg);
 }
 
-/* 자동완성 */
 #suggestions {
   position: absolute;
-  width: 100%;
+  width: calc(100% - 36px);
   background: white;
   border-radius: 12px;
   border: 1px solid var(--border);
@@ -128,7 +96,6 @@ h1 span { opacity: 0.4; }
   background: #f0f0f0;
 }
 
-/* 버튼 */
 .btn-check {
   width: calc(100% - 36px);
   margin: 0 18px 10px;
@@ -137,34 +104,16 @@ h1 span { opacity: 0.4; }
   border: none;
   background: var(--navy);
   color: white;
-  font-weight: 600;
   cursor: pointer;
-
-  /* 🔥 애니메이션 */
   transition: all 0.15s ease;
 }
 
-/* 눌리는 효과 */
 .btn-check:active {
   transform: scale(0.97);
 }
 
-/* hover 효과 */
-.btn-check:hover {
-  opacity: 0.9;
-}
-
-.btn-secondary {
-  background: var(--navy);
-  opacity: 0.7;
-}
-
 #result {
   margin: 0 18px 18px;
-  font-size: 15px;
-  line-height: 1.6;
-
-  /* 결과 등장 애니메이션 */
   animation: fadeIn 0.3s ease;
 }
 
@@ -176,74 +125,75 @@ h1 span { opacity: 0.4; }
 .safe { color: var(--safe); }
 .warning { color: var(--warn); }
 .danger { color: var(--danger); }
-
-.footer {
-  text-align: center;
-  font-size: 11px;
-  color: #aaa;
-  margin-top: 20px;
-}
 </style>
 </head>
 
 <body>
 
 <div class="topbar">
-  <span class="topbar-brand">Patrick Labs AI</span>
+  <span>Patrick Labs AI</span>
   <div class="globe-icon">🌍</div>
 </div>
 
 <div class="container">
 
-<div>
-  <div class="header-eyebrow">Water Safety</div>
-  <h1>Can I drink<br><span>this water?</span></h1>
-  <div class="data-source">Based on WHO, CDC, UNICEF & local authorities</div>
-</div>
+<h1>Can I drink this water?</h1>
 
 <div class="card">
   <div class="input-section">
-    <div class="input-wrap">
-      <span class="input-icon">🔍</span>
-      <input id="location" placeholder="Enter city or country..." oninput="showSuggestions()" />
-      <div id="suggestions"></div>
-    </div>
+    <input id="location" placeholder="Enter city or country..." 
+      oninput="showSuggestions()" 
+      onclick="showDefaultCities()" />
+    <div id="suggestions"></div>
   </div>
 
   <button class="btn-check" onclick="checkWater()">Check Water 💧</button>
-  <button class="btn-check btn-secondary" onclick="useMyLocation()">Use My Location 📍</button>
+  <button class="btn-check" onclick="useMyLocation()">Use My Location 📍</button>
 
   <div id="result"></div>
-</div>
-
-<div class="footer">
-Data is for guidance only. Always verify locally.
 </div>
 
 </div>
 
 <script>
 
-// 데이터 일부 (유지)
+// 데이터
 const data = {
-"seoul":{status:"SAFE",risk:"Advanced purification 🇰🇷"},
-"tokyo":{status:"SAFE",risk:"Strict standards 🇯🇵"},
-"new york":{status:"SAFE",risk:"EPA regulated 🇺🇸"},
-"london":{status:"SAFE",risk:"Regulated 🇬🇧"},
-"delhi":{status:"DANGER",risk:"Contamination 🇮🇳"},
-"bangkok":{status:"WARNING",risk:"Filtered 🇹🇭"}
+"seoul":{status:"SAFE",risk:"Advanced purification 🇰🇷",phone:"+82-44-201-3114"},
+"tokyo":{status:"SAFE",risk:"Strict standards 🇯🇵",phone:"+81-3-5253-1111"},
+"new york":{status:"SAFE",risk:"EPA regulated 🇺🇸",phone:"+1-212-639-9675"},
+"london":{status:"SAFE",risk:"Regulated 🇬🇧",phone:"+44-20-7946-0000"},
+"delhi":{status:"DANGER",risk:"Contamination 🇮🇳",phone:"+91-11-23792000"},
+"bangkok":{status:"WARNING",risk:"Filtered 🇹🇭",phone:"+66-2-203-9000"}
 };
 
-function normalizeLocation(name){
-name = name.toLowerCase();
-if(name.includes("서울")) return "seoul";
-return name;
+// 기본 도시
+function showDefaultCities(){
+let box=document.getElementById("suggestions");
+box.innerHTML="";
+
+const cities=[
+"Seoul 🇰🇷","Tokyo 🇯🇵","New York 🇺🇸","London 🇬🇧","Bangkok 🇹🇭","Delhi 🇮🇳"
+];
+
+cities.forEach(c=>{
+let div=document.createElement("div");
+div.className="sug-item";
+div.innerText=c;
+div.onclick=()=>{
+document.getElementById("location").value=c.split(" ")[0];
+box.innerHTML="";
+}
+box.appendChild(div);
+});
 }
 
+// 자동완성
 function showSuggestions(){
 let input=document.getElementById("location").value.toLowerCase();
 let box=document.getElementById("suggestions");
 box.innerHTML="";
+
 for(let key in data){
 if(key.includes(input)){
 let div=document.createElement("div");
@@ -258,28 +208,28 @@ box.appendChild(div);
 }
 }
 
+// 결과
 function checkWater(){
-let raw=document.getElementById("location").value;
-let val=normalizeLocation(raw);
+let val=document.getElementById("location").value.toLowerCase();
 let result=document.getElementById("result");
 
 if(data[val]){
-render(data[val]);
-return;
-}
-
-result.innerHTML="🔄 Water quality is being verified...";
-}
-
-function render(d){
+let d=data[val];
 let cls="warning";
 if(d.status==="SAFE")cls="safe";
 if(d.status==="DANGER")cls="danger";
 
-document.getElementById("result").innerHTML=
-`<div class="${cls}"><strong>${d.status}</strong></div><div>${d.risk}</div>`;
+result.innerHTML=`
+<div class="${cls}"><strong>${d.status}</strong></div>
+<div>${d.risk}</div>
+<div>☎️ ${d.phone}</div>
+`;
+}else{
+result.innerHTML="🔄 Water quality is being verified...";
+}
 }
 
+// GPS
 function useMyLocation(){
 let result=document.getElementById("result");
 result.innerHTML="📡 Getting location...";
@@ -292,7 +242,7 @@ let res=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat
 let loc=await res.json();
 
 let city=loc.address.city || loc.address.state || loc.address.country;
-document.getElementById("location").value=city;
+document.getElementById("location").value=city.toLowerCase();
 
 checkWater();
 });
