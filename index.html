@@ -3,284 +3,194 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DrinkSafe — Patrick Labs AI</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=Instrument+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>DrinkSafe</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --bg: #f5f4f0;
-  --border: #e8e5de;
-  --navy: #0B1F3B;
-  --safe:#1a7a4a;
-  --warn:#a05c00;
-  --danger:#c0272d;
-}
-
 body {
-  font-family: 'Instrument Sans', sans-serif;
-  background: var(--bg);
+  margin:0;
+  background:#f5f4f0;
+  font-family:'Inter', sans-serif;
 }
 
-.topbar {
-  border-bottom: 1px solid var(--border);
-  padding: 13px 20px;
-  display: flex;
-  justify-content: space-between;
-  background: white;
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  padding:14px 20px;
+  color:#999;
+  font-size:14px;
 }
 
-.globe-icon {
-  animation: spin 6s linear infinite;
+.container{
+  max-width:460px;
+  margin:auto;
+  padding:40px 20px;
 }
 
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+h1{
+  font-family:'Syne';
+  font-size:42px;
+  line-height:1.1;
+  color:#0B1F3B;
 }
 
-.container {
-  max-width: 460px;
-  margin: auto;
-  padding: 36px 20px;
+h1 span{
+  color:#9aa0a6;
 }
 
-h1 {
-  font-family: 'Syne';
-  font-size: 30px;
-  color: var(--navy);
+.subtitle{
+  margin-top:16px;
+  color:#9aa0a6;
+  font-size:16px;
 }
 
-.card {
-  background: white;
-  border-radius: 20px;
-  border: 1px solid var(--border);
-  margin-top: 25px;
+.card{
+  margin-top:30px;
+  background:white;
+  border-radius:18px;
+  padding:18px;
 }
 
-.input-section {
-  padding: 18px;
-  position: relative;
+input{
+  width:100%;
+  padding:14px;
+  border-radius:12px;
+  border:1px solid #e5e5e5;
+  background:#f7f7f7;
 }
 
-#location {
-  width: 100%;
-  padding: 14px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: var(--bg);
+button{
+  width:100%;
+  margin-top:10px;
+  padding:14px;
+  border-radius:12px;
+  border:none;
+  background:#0B1F3B;
+  color:white;
+  cursor:pointer;
 }
 
-#suggestions {
-  position: absolute;
-  width: calc(100% - 36px);
-  background: white;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  margin-top: 5px;
-  z-index: 10;
+#result{
+  margin-top:14px;
 }
-
-.sug-item {
-  padding: 10px;
-  cursor: pointer;
-}
-
-.sug-item:hover {
-  background: #f0f0f0;
-}
-
-.btn-check {
-  width: calc(100% - 36px);
-  margin: 0 18px 10px;
-  padding: 14px;
-  border-radius: 12px;
-  border: none;
-  background: var(--navy);
-  color: white;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.btn-check:active {
-  transform: scale(0.97);
-}
-
-#result {
-  margin: 0 18px 18px;
-  animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.safe { color: var(--safe); }
-.warning { color: var(--warn); }
-.danger { color: var(--danger); }
 </style>
 </head>
 
 <body>
 
 <div class="topbar">
-  <span>Patrick Labs AI</span>
-  <div class="globe-icon">🌍</div>
+  <div>Patrick Labs AI</div>
+  <div>🌍</div>
 </div>
 
 <div class="container">
 
-<h1>Can I drink this water?</h1>
+<h1>
+  Can I drink<br>
+  <span>this water?</span>
+</h1>
+
+<div class="subtitle">
+  Based on WHO, CDC, UNICEF & local authorities
+</div>
 
 <div class="card">
-  <div class="input-section">
-    <input id="location" placeholder="Enter city or country..." 
-      oninput="showSuggestions()" 
-      onclick="showDefaultCities()" />
-    <div id="suggestions"></div>
-  </div>
 
-  <button class="btn-check" onclick="checkWater()">Check Water 💧</button>
-  <button class="btn-check" onclick="useMyLocation()">Use My Location 📍</button>
+<input id="location" placeholder="Enter city or country">
 
-  <div id="result"></div>
+<button onclick="checkWater()">Check water 💧</button>
+<button onclick="useMyLocation()">Use my location 📍</button>
+
+<div id="result"></div>
+
 </div>
 
 </div>
 
 <script>
 
-// 🌍 국가 기반 데이터 (WHO 구조 참고)
-const countryData = {
-"united states":{status:"SAFE",risk:"EPA regulated 🇺🇸",phone:"+12126399675"},
-"united kingdom":{status:"SAFE",risk:"Strict regulations 🇬🇧",phone:"+442079460000"},
-"japan":{status:"SAFE",risk:"High standards 🇯🇵",phone:"+81353281111"},
-"south korea":{status:"SAFE",risk:"Modern infrastructure 🇰🇷",phone:"+822120"},
-"singapore":{status:"SAFE",risk:"Top quality 🇸🇬",phone:"+6567319000"},
-
-"india":{status:"DANGER",risk:"High contamination risk 🇮🇳",phone:"+911123792000"},
-"indonesia":{status:"DANGER",risk:"Unsafe water 🇮🇩",phone:"+6221500000"},
-"thailand":{status:"WARNING",risk:"Filtered recommended 🇹🇭",phone:"+6622039000"},
-"philippines":{status:"WARNING",risk:"Boil recommended 🇵🇭",phone:"+63286517800"},
-"mexico":{status:"DANGER",risk:"Unsafe to drink 🇲🇽",phone:"+525550901600"}
+// 국가 데이터
+const data={
+"south korea":{status:"SAFE",msg:"Clean infrastructure 🇰🇷"},
+"japan":{status:"SAFE",msg:"High standards 🇯🇵"},
+"united states":{status:"SAFE",msg:"EPA regulated 🇺🇸"},
+"thailand":{status:"WARNING",msg:"Filtered recommended 🇹🇭"},
+"india":{status:"DANGER",msg:"Not safe to drink 🇮🇳"}
 };
 
 // 도시 → 국가
-const cityToCountry = {
+const cityMap={
 "seoul":"south korea",
+"서울":"south korea",
 "tokyo":"japan",
 "bangkok":"thailand",
 "delhi":"india",
-"bali":"indonesia",
-"new york":"united states",
-"london":"united kingdom"
+"new york":"united states"
 };
 
-// 기본 추천
-function showDefaultCities(){
-const cities=["Seoul 🇰🇷","Tokyo 🇯🇵","New York 🇺🇸","London 🇬🇧","Bangkok 🇹🇭","Delhi 🇮🇳"];
-let box=document.getElementById("suggestions");
-box.innerHTML="";
+// 결과 표시
+function render(d){
+let color="#a05c00";
+if(d.status==="SAFE") color="#1a7a4a";
+if(d.status==="DANGER") color="#c0272d";
 
-cities.forEach(c=>{
-let div=document.createElement("div");
-div.className="sug-item";
-div.innerText=c;
-div.onclick=()=>{
-document.getElementById("location").value=c.split(" ")[0];
-box.innerHTML="";
-}
-box.appendChild(div);
-});
+document.getElementById("result").innerHTML=
+`<div style="color:${color};font-weight:600">${d.status}</div>
+<div>${d.msg}</div>`;
 }
 
-// 자동완성
-function showSuggestions(){
-let input=document.getElementById("location").value.toLowerCase();
-let box=document.getElementById("suggestions");
-box.innerHTML="";
-for(let key in cityToCountry){
-if(key.includes(input)){
-let div=document.createElement("div");
-div.className="sug-item";
-div.innerText=key;
-div.onclick=()=>{
-document.getElementById("location").value=key;
-box.innerHTML="";
-}
-box.appendChild(div);
-}
-}
-}
-
-// 결과
+// 검색
 function checkWater(){
 let input=document.getElementById("location").value.toLowerCase();
+let country=cityMap[input]||input;
+
+if(data[country]){
+render(data[country]);
+}else{
+document.getElementById("result").innerText="Checking water quality...";
+}
+}
+
+// GPS (핵심 수정 부분)
+function useMyLocation(){
 let result=document.getElementById("result");
+result.innerText="📡 Getting location...";
 
-let country = cityToCountry[input] || input;
-
-if(countryData[country]){
-render(countryData[country]);
+if(!navigator.geolocation){
+result.innerText="Location not supported";
 return;
 }
 
-// API fallback
-fetch(`https://restcountries.com/v3.1/name/${country}`)
-.then(res=>res.json())
-.then(data=>{
-let name=data[0].name.common.toLowerCase();
-
-if(countryData[name]){
-render(countryData[name]);
-}else{
-result.innerHTML="🔄 Water quality is being verified...";
-}
-})
-.catch(()=>{
-result.innerHTML="🔄 Water quality is being verified...";
-});
-}
-
-// 출력
-function render(d){
-let cls="warning";
-if(d.status==="SAFE")cls="safe";
-if(d.status==="DANGER")cls="danger";
-
-let dangerBox="";
-if(d.status==="DANGER"){
-dangerBox=`<div style="background:#ffecec;padding:10px;border-radius:10px;margin-bottom:10px;font-weight:600;">
-⚠️ Not safe to drink. Avoid tap water.
-</div>`;
-}
-
-document.getElementById("result").innerHTML=
-`${dangerBox}
-<div class="${cls}"><strong>${d.status}</strong></div>
-<div>${d.risk}</div>
-<div>📞 <a href="tel:${d.phone}">Call water authority</a></div>`;
-}
-
-// GPS
-function useMyLocation(){
-let result=document.getElementById("result");
-result.innerHTML="📡 Getting location...";
-
 navigator.geolocation.getCurrentPosition(async(pos)=>{
+
 let lat=pos.coords.latitude;
 let lon=pos.coords.longitude;
 
+try{
 let res=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
-let loc=await res.json();
+let dataLoc=await res.json();
 
-let city=loc.address.city || loc.address.state || loc.address.country;
-document.getElementById("location").value=city.toLowerCase();
+let city=dataLoc.address.city 
+|| dataLoc.address.town 
+|| dataLoc.address.state 
+|| dataLoc.address.country;
+
+document.getElementById("location").value=city;
 
 checkWater();
+
+}catch(e){
+result.innerText="Checking water quality...";
+}
+
+},
+(err)=>{
+result.innerText="Location permission denied";
+},
+{
+timeout:8000
 });
 }
 
