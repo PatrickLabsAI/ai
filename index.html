@@ -18,7 +18,6 @@ body {
 .topbar{
   display:flex;
   justify-content:space-between;
-  align-items:center;
   padding:14px 20px;
   background:white;
   border-bottom:1px solid #e8e5de;
@@ -45,7 +44,7 @@ body {
 h1{
   font-family:'Syne';
   font-size:34px;
-  margin-top:5px;
+  margin-top:4px;
   color:#0B1F3B;
 }
 
@@ -53,9 +52,9 @@ h1 span{
   color:#9aa0a6;
 }
 
-/* 🔥 문구 위로 */
+/* 🔥 문구 더 위 */
 .tagline{
-  margin-top:2px;
+  margin-top:0px;
   font-size:13px;
   color:#7a7f87;
 }
@@ -109,7 +108,6 @@ input{
   border-radius:12px;
   border:1px solid #e5e5e5;
   overflow:hidden;
-  z-index:10;
 }
 
 .sug{
@@ -142,7 +140,6 @@ button{
   margin-top:14px;
   font-family:'Quicksand';
   font-size:16px;
-  line-height:1.6;
 }
 </style>
 </head>
@@ -162,7 +159,7 @@ button{
 </h1>
 
 <div class="tagline">
-<span>⚡️</span> AI-powered water safety cloud<br>
+<span>⚡️</span> AI-powered live water cloud<br>
 <span>⚡️</span> Based on WHO, CDC & UNICEF
 </div>
 
@@ -199,20 +196,17 @@ const suggestions = document.getElementById("suggestions");
 
 let lastResult="";
 
-/* 🔥 데이터 */
+/* 🔥 정확한 국가 데이터 */
 const data = {
 "south korea":{status:"SAFE",phone:"1339"},
 "france":{status:"SAFE",phone:"15"},
-"india":{status:"DANGER",phone:"102"},
-"kenya":{status:"WARNING",phone:"+254207177000"},
+"india":{status:"DANGER",phone:"104"},
+"kenya":{status:"WARNING",phone:"+254202717077"},
 "united states":{status:"SAFE",phone:"18004264791"}
 };
 
-/* 🔥 도시/언어 매핑 강화 */
 const cityMap = {
-"seoul":"south korea",
-"서울":"south korea",
-"서울특별시":"south korea",
+"seoul":"south korea","서울":"south korea","서울특별시":"south korea",
 "paris":"france",
 "mumbai":"india",
 "delhi":"india",
@@ -222,7 +216,6 @@ const cityMap = {
 
 const popular=["Mumbai 🇮🇳","Delhi 🇮🇳","Paris 🇫🇷","Seoul 🇰🇷","Nairobi 🇰🇪"];
 
-/* 인기 */
 function showPopular(){
 suggestions.innerHTML="";
 popular.forEach(c=>{
@@ -237,13 +230,10 @@ suggestions.appendChild(d);
 });
 }
 
-/* 자동완성 */
 function showSuggestions(){
 let val=input.value.toLowerCase();
 suggestions.innerHTML="";
-
-if(!val){ showPopular(); return; }
-
+if(!val){showPopular();return;}
 for(let key in cityMap){
 if(key.includes(val)){
 let d=document.createElement("div");
@@ -258,7 +248,6 @@ suggestions.appendChild(d);
 }
 }
 
-/* 닫기 */
 function hideSuggestions(e){
 if(!input.contains(e.target)){
 suggestions.innerHTML="";
@@ -273,15 +262,14 @@ function getCountry(val){
 return cityMap[val] || val;
 }
 
-/* 결과 */
 function render(obj,name,isLoc=false){
 
 let explanation =
 obj.status==="SAFE"
-? "✅ Clean, treated water with strong infrastructure. Safe for daily consumption."
+? "✅ Clean, treated water with strong infrastructure."
 : obj.status==="DANGER"
 ? "🚫 High contamination risk. Avoid tap water."
-: "⚠️ Water quality varies. Boil or filter before drinking.";
+: "⚠️ Boil or filter before drinking.";
 
 let extra = isLoc ? "<div>📍 Within ~1km radius, similar conditions apply</div>" : "";
 
@@ -295,28 +283,21 @@ ${extra}
 `;
 }
 
-/* 체크 */
 function checkWater(){
 let val=normalize(input.value);
 if(!val){
 result.innerHTML="❗ Enter a location";
 return;
 }
-
-let country=getCountry(val);
-let obj=data[country] || {status:"WARNING",phone:""};
-
+let obj=data[getCountry(val)] || {status:"WARNING",phone:""};
 render(obj,input.value);
 }
 
-/* GPS */
 function useMyLocation(){
-
 result.innerHTML="📡 Getting location...";
 suggestions.innerHTML="";
 
 navigator.geolocation.getCurrentPosition(async(pos)=>{
-
 try{
 let res=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
 let loc=await res.json();
@@ -329,39 +310,26 @@ loc.address.country;
 
 input.value = city;
 
-let val=normalize(city);
-let country=getCountry(val);
-
-let obj=data[country] || {status:"WARNING",phone:""};
+let obj=data[getCountry(normalize(city))] || {status:"WARNING",phone:""};
 
 render(obj,city,true);
 
 }catch{
 result.innerHTML="❌ Location failed";
 }
-
 },()=>{
 result.innerHTML="❌ Permission denied";
 });
 }
 
-/* 공유 */
 function shareResult(){
 if(!lastResult){
 alert("Check water first!");
 return;
 }
-
-if(navigator.share){
-navigator.share({
-title:"Water Safety",
-text:lastResult,
-url:window.location.href
-});
-}else{
-navigator.clipboard.writeText(lastResult);
-alert("Copied!");
-}
+navigator.share
+? navigator.share({title:"Water Safety",text:lastResult,url:location.href})
+: (navigator.clipboard.writeText(lastResult), alert("Copied!"));
 }
 
 </script>
