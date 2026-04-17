@@ -139,17 +139,38 @@ h1 span { opacity: 0.4; }
   color: white;
   font-weight: 600;
   cursor: pointer;
+
+  /* 🔥 애니메이션 */
+  transition: all 0.15s ease;
+}
+
+/* 눌리는 효과 */
+.btn-check:active {
+  transform: scale(0.97);
+}
+
+/* hover 효과 */
+.btn-check:hover {
+  opacity: 0.9;
 }
 
 .btn-secondary {
-  background: #0B1F3B;
-  opacity: 0.9;
+  background: var(--navy);
+  opacity: 0.7;
 }
 
 #result {
   margin: 0 18px 18px;
   font-size: 15px;
   line-height: 1.6;
+
+  /* 결과 등장 애니메이션 */
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .safe { color: var(--safe); }
@@ -189,7 +210,7 @@ h1 span { opacity: 0.4; }
     </div>
   </div>
 
-  <button class="btn-check" onclick="checkWater()">Check Water</button>
+  <button class="btn-check" onclick="checkWater()">Check Water 💧</button>
   <button class="btn-check btn-secondary" onclick="useMyLocation()">Use My Location 📍</button>
 
   <div id="result"></div>
@@ -203,66 +224,22 @@ Data is for guidance only. Always verify locally.
 
 <script>
 
-// 🌍 100+ 도시 + 국가
+// 데이터 일부 (유지)
 const data = {
 "seoul":{status:"SAFE",risk:"Advanced purification 🇰🇷"},
 "tokyo":{status:"SAFE",risk:"Strict standards 🇯🇵"},
-"osaka":{status:"SAFE",risk:"Clean supply 🇯🇵"},
-"beijing":{status:"WARNING",risk:"Boil recommended 🇨🇳"},
-"shanghai":{status:"WARNING",risk:"Filtered advised 🇨🇳"},
-"bangkok":{status:"WARNING",risk:"Filtered 🇹🇭"},
-"singapore":{status:"SAFE",risk:"Top quality 🇸🇬"},
 "new york":{status:"SAFE",risk:"EPA regulated 🇺🇸"},
-"los angeles":{status:"SAFE",risk:"Safe 🇺🇸"},
-"san francisco":{status:"SAFE",risk:"Safe 🇺🇸"},
-"chicago":{status:"SAFE",risk:"Safe 🇺🇸"},
 "london":{status:"SAFE",risk:"Regulated 🇬🇧"},
-"paris":{status:"SAFE",risk:"Safe 🇫🇷"},
-"berlin":{status:"SAFE",risk:"Clean 🇩🇪"},
-"rome":{status:"SAFE",risk:"Aqueduct 🇮🇹"},
-"madrid":{status:"SAFE",risk:"Safe 🇪🇸"},
-"barcelona":{status:"SAFE",risk:"Safe 🇪🇸"},
-"toronto":{status:"SAFE",risk:"Clean 🇨🇦"},
-"vancouver":{status:"SAFE",risk:"Clean 🇨🇦"},
-"sydney":{status:"SAFE",risk:"High quality 🇦🇺"},
-"melbourne":{status:"SAFE",risk:"Clean 🇦🇺"},
-"dubai":{status:"SAFE",risk:"Desalinated 🇦🇪"},
 "delhi":{status:"DANGER",risk:"Contamination 🇮🇳"},
-"mumbai":{status:"WARNING",risk:"Boil 🇮🇳"},
-"jakarta":{status:"DANGER",risk:"Unsafe 🇮🇩"},
-"bali":{status:"DANGER",risk:"Bacteria 🇮🇩"},
-"manila":{status:"WARNING",risk:"Boil 🇵🇭"},
-"cairo":{status:"WARNING",risk:"Mixed 🇪🇬"},
-"lagos":{status:"DANGER",risk:"Unsafe 🇳🇬"},
-"nairobi":{status:"WARNING",risk:"Filtered 🇰🇪"},
-"rio":{status:"WARNING",risk:"Boil 🇧🇷"},
-"mexico city":{status:"DANGER",risk:"Unsafe 🇲🇽"},
-
-// 국가
-"korea":{status:"SAFE",risk:"Modern 🇰🇷"},
-"japan":{status:"SAFE",risk:"High quality 🇯🇵"},
-"usa":{status:"SAFE",risk:"Regulated 🇺🇸"},
-"uk":{status:"SAFE",risk:"Safe 🇬🇧"},
-"france":{status:"SAFE",risk:"Safe 🇫🇷"},
-"germany":{status:"SAFE",risk:"Clean 🇩🇪"},
-"italy":{status:"SAFE",risk:"Safe 🇮🇹"},
-"spain":{status:"SAFE",risk:"Safe 🇪🇸"},
-"canada":{status:"SAFE",risk:"Clean 🇨🇦"},
-"australia":{status:"SAFE",risk:"Clean 🇦🇺"},
-"uae":{status:"SAFE",risk:"Desalinated 🇦🇪"},
-"india":{status:"DANGER",risk:"Unsafe 🇮🇳"},
-"indonesia":{status:"DANGER",risk:"Unsafe 🇮🇩"}
+"bangkok":{status:"WARNING",risk:"Filtered 🇹🇭"}
 };
 
-// normalize
 function normalizeLocation(name){
 name = name.toLowerCase();
 if(name.includes("서울")) return "seoul";
-if(name.includes("korea")) return "korea";
 return name;
 }
 
-// 자동완성
 function showSuggestions(){
 let input=document.getElementById("location").value.toLowerCase();
 let box=document.getElementById("suggestions");
@@ -281,11 +258,9 @@ box.appendChild(div);
 }
 }
 
-// 결과
 function checkWater(){
 let raw=document.getElementById("location").value;
 let val=normalizeLocation(raw);
-
 let result=document.getElementById("result");
 
 if(data[val]){
@@ -293,14 +268,7 @@ render(data[val]);
 return;
 }
 
-for(let key in data){
-if(val.includes(key)){
-render(data[key]);
-return;
-}
-}
-
-result.innerHTML="🔄 Water quality data is being verified...";
+result.innerHTML="🔄 Water quality is being verified...";
 }
 
 function render(d){
@@ -312,7 +280,6 @@ document.getElementById("result").innerHTML=
 `<div class="${cls}"><strong>${d.status}</strong></div><div>${d.risk}</div>`;
 }
 
-// GPS
 function useMyLocation(){
 let result=document.getElementById("result");
 result.innerHTML="📡 Getting location...";
@@ -324,24 +291,10 @@ let lon=pos.coords.longitude;
 let res=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
 let loc=await res.json();
 
-let candidates=[
-loc.address.city,
-loc.address.town,
-loc.address.state,
-loc.address.country
-].filter(Boolean);
+let city=loc.address.city || loc.address.state || loc.address.country;
+document.getElementById("location").value=city;
 
-for(let c of candidates){
-let val=normalizeLocation(c);
-if(data[val]){
-document.getElementById("location").value=c;
-render(data[val]);
-return;
-}
-}
-
-document.getElementById("location").value=candidates[0];
-result.innerHTML="🔄 Water quality data is being verified...";
+checkWater();
 });
 }
 
