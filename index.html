@@ -52,15 +52,25 @@ h1 span{
   color:#9aa0a6;
 }
 
-.subtitle{
-  margin-top:10px;
+/* 🌊 폭포 애니메이션 */
+.waterfall{
+  margin-top:12px;
   font-size:28px;
-  animation:flow 1.5s infinite alternate;
+  display:flex;
+  gap:6px;
 }
 
-@keyframes flow{
-  from{opacity:0.6;}
-  to{opacity:1;}
+.drop{
+  animation:fall 1.2s infinite;
+}
+
+.drop:nth-child(2){animation-delay:0.2s;}
+.drop:nth-child(3){animation-delay:0.4s;}
+
+@keyframes fall{
+  0%{transform:translateY(0); opacity:0.4;}
+  50%{transform:translateY(8px); opacity:1;}
+  100%{transform:translateY(0); opacity:0.4;}
 }
 
 .card{
@@ -126,7 +136,7 @@ button{
 </style>
 </head>
 
-<body>
+<body onclick="hideSuggestions(event)">
 
 <div class="topbar">
   <div>Patrick Labs AI</div>
@@ -140,7 +150,12 @@ button{
   <span>this water?</span>
 </h1>
 
-<div class="subtitle">🌊💦</div>
+<!-- 🌊 애니메이션 폭포 -->
+<div class="waterfall">
+  <span class="drop">💧</span>
+  <span class="drop">💧</span>
+  <span class="drop">💧</span>
+</div>
 
 <div class="card">
 
@@ -163,87 +178,38 @@ button{
 
 <script>
 
-// 데이터 + 설명 + 전화
+// 데이터
 const data = {
-"south korea":{
-status:"SAFE",
-msg:"Tap water is safe to drink.",
-desc:"Highly regulated water system.",
-phone:"+822120"
-},
-"japan":{
-status:"SAFE",
-msg:"Safe tap water nationwide.",
-desc:"Strict national quality standards.",
-phone:"+81353281111"
-},
-"france":{
-status:"SAFE",
-msg:"Tap water is generally safe.",
-desc:"EU regulated water quality.",
-phone:"+33140405050"
-},
-"india":{
-status:"DANGER",
-msg:"Do not drink tap water.",
-desc:"High contamination risk.",
-phone:"+911123792000"
-},
-"thailand":{
-status:"WARNING",
-msg:"Avoid tap water. Use bottled.",
-desc:"Not consistently treated.",
-phone:"+6622039000"
-},
-"kenya":{
-status:"WARNING",
-msg:"Boil or filter water.",
-desc:"Water safety varies by region.",
-phone:"+254202718707"
-},
-"united states":{
-status:"SAFE",
-msg:"Generally safe to drink.",
-desc:"EPA regulated system.",
-phone:"+12126399675"
-}
+"south korea":{status:"SAFE",msg:"Tap water is safe.",desc:"Highly regulated.",phone:"+822120"},
+"france":{status:"SAFE",msg:"Safe to drink.",desc:"EU regulated.",phone:"+33140405050"},
+"india":{status:"DANGER",msg:"Do not drink.",desc:"High contamination risk.",phone:"+911123792000"},
+"kenya":{status:"WARNING",msg:"Boil water.",desc:"Varies by region.",phone:"+254202718707"}
 };
 
-// 도시 매핑
+// 도시
 const cityMap = {
 "seoul":"south korea",
 "paris":"france",
-"tokyo":"japan",
 "mumbai":"india",
 "delhi":"india",
-"nairobi":"kenya",
-"new york":"united states"
+"nairobi":"kenya"
 };
 
-// 인기 도시
-const popular = [
-"Mumbai 🇮🇳",
-"Delhi 🇮🇳",
-"Paris 🇫🇷",
-"Seoul 🇰🇷",
-"Nairobi 🇰🇪"
-];
+// 인기
+const popular = ["Mumbai 🇮🇳","Delhi 🇮🇳","Paris 🇫🇷","Seoul 🇰🇷","Nairobi 🇰🇪"];
 
 // 인기 표시
 function showPopular(){
 let box=document.getElementById("suggestions");
 box.innerHTML="";
-
 popular.forEach(c=>{
 let div=document.createElement("div");
 div.className="sug";
 div.innerText=c;
-
 div.onclick=()=>{
 document.getElementById("location").value=c.split(" ")[0];
 box.innerHTML="";
 };
-
 box.appendChild(div);
 });
 }
@@ -253,54 +219,49 @@ function showSuggestions(){
 let input=document.getElementById("location").value.toLowerCase();
 let box=document.getElementById("suggestions");
 box.innerHTML="";
-
 for(let key in cityMap){
 if(key.includes(input)){
 let div=document.createElement("div");
 div.className="sug";
 div.innerText=key;
-
 div.onclick=()=>{
 document.getElementById("location").value=key;
 box.innerHTML="";
 };
-
 box.appendChild(div);
 }
 }
 }
 
-// normalize
-function normalize(input){
-return input.toLowerCase().trim();
+// 👉 자동완성 닫기 핵심
+function hideSuggestions(e){
+const box = document.getElementById("suggestions");
+const input = document.getElementById("location");
+
+if(!input.contains(e.target)){
+  box.innerHTML="";
+}
 }
 
-// 로딩
-function showLoading(){
-let dots=0;
-const result=document.getElementById("result");
-
-return setInterval(()=>{
-dots=(dots+1)%4;
-result.innerHTML=`💧 Checking water quality${'.'.repeat(dots)} ⏳`;
-},500);
+// normalize
+function normalize(i){
+return i.toLowerCase().trim();
 }
 
 // 결과
 function render(d, isLocation=false){
-
 let color="#a05c00";
 if(d.status==="SAFE") color="#1a7a4a";
 if(d.status==="DANGER") color="#c0272d";
 
-let extra = isLocation 
-? "<div style='margin-top:8px;'>📍 Within ~1km radius, tap water via public system is generally assessed.</div>"
+let extra = isLocation
+? "<div style='margin-top:8px;'>📍 Within ~1km radius, tap water is generally assessed.</div>"
 : "";
 
 document.getElementById("result").innerHTML=
 `<div style="color:${color};font-weight:600">${d.status}</div>
 <div>${d.msg}</div>
-<div style="color:#666;font-size:13px">${d.desc}</div>
+<div style="font-size:13px;color:#666">${d.desc}</div>
 ${extra}
 <div style="margin-top:8px;">
 📞 <a href="tel:${d.phone}">Call local authority</a>
@@ -309,61 +270,37 @@ ${extra}
 
 // 검색
 function checkWater(){
+document.getElementById("suggestions").innerHTML="";
 let input=document.getElementById("location").value;
-let normalized=normalize(input);
-
-let loader=showLoading();
-
-let country=cityMap[normalized]||normalized;
-
-setTimeout(()=>{
-clearInterval(loader);
+let country=cityMap[normalize(input)]||normalize(input);
 
 if(data[country]){
 render(data[country]);
 }else{
-document.getElementById("result").innerHTML=
-"💧 Water quality is being verified... ⏳";
+document.getElementById("result").innerHTML="Checking...";
 }
-
-},1200);
 }
 
 // GPS
 function useMyLocation(){
 
-const result = document.getElementById("result");
-result.innerHTML = "📡 Getting location...";
+document.getElementById("suggestions").innerHTML="";
 
 navigator.geolocation.getCurrentPosition(async(pos)=>{
 
-let lat = pos.coords.latitude;
-let lon = pos.coords.longitude;
-
-try{
-let res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+let res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
 let loc = await res.json();
 
-let city =
-loc.address.city ||
-loc.address.town ||
-loc.address.state ||
-loc.address.country;
+let city = loc.address.city || loc.address.town || loc.address.state;
 
-document.getElementById("location").value = city.toLowerCase();
+document.getElementById("location").value = city;
 
-let normalized = normalize(city);
-let country = cityMap[normalized] || normalized;
+let country = cityMap[normalize(city)] || normalize(city);
 
 if(data[country]){
 render(data[country], true);
 }else{
-document.getElementById("result").innerHTML=
-"💧 Water quality is being verified... ⏳";
-}
-
-}catch(e){
-result.innerHTML="💧 Checking water quality... ⏳";
+document.getElementById("result").innerHTML="Checking...";
 }
 
 });
