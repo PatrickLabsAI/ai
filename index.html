@@ -6,7 +6,7 @@
 
 <title>DrinkSafe</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700&family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700&family=Inter:wght@300;400;500;600&family=Quicksand:wght@400;600&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
 body {
@@ -24,7 +24,7 @@ body {
   border-bottom:1px solid #e8e5de;
   font-size:13px;
   color:#9aa0a6;
-  font-family:'Space Grotesk', sans-serif;
+  font-family:'Space Grotesk';
 }
 
 .globe{
@@ -39,13 +39,15 @@ body {
 .container{
   max-width:460px;
   margin:auto;
-  padding:20px;
+  padding:18px;
 }
 
+/* 제목 위치 살짝 위 */
 h1{
   font-family:'Syne';
   font-size:34px;
   line-height:1.1;
+  margin-top:5px;
   color:#0B1F3B;
 }
 
@@ -53,10 +55,20 @@ h1 span{
   color:#9aa0a6;
 }
 
+/* ⚡ 반짝 */
 .tagline{
-  margin-top:8px;
+  margin-top:6px;
   font-size:13px;
   color:#7a7f87;
+}
+
+.tagline span{
+  animation:flash 1s infinite alternate;
+}
+
+@keyframes flash{
+  from{opacity:0.4;}
+  to{opacity:1;}
 }
 
 .gif iframe{
@@ -65,7 +77,7 @@ h1 span{
   border:none;
   border-radius:14px;
   margin-top:12px;
-  pointer-events:none; /* 🔥 클릭 차단 */
+  pointer-events:none;
 }
 
 .card{
@@ -128,10 +140,12 @@ button{
   color:#0B1F3B;
 }
 
+/* 결과 귀엽게 */
 #result{
   margin-top:14px;
-  font-size:15px;
-  line-height:1.5;
+  font-family:'Quicksand';
+  font-size:16px;
+  line-height:1.6;
 }
 </style>
 </head>
@@ -151,8 +165,8 @@ button{
 </h1>
 
 <div class="tagline">
-⚡️ AI-powered water safety intelligence platform<br>
-⚡️ Based on WHO, CDC, UNICEF & global data
+<span>⚡️</span> AI-powered water safety cloud<br>
+<span>⚡️</span> Based on WHO, CDC & UNICEF
 </div>
 
 <div class="gif">
@@ -174,7 +188,7 @@ button{
 
 <div id="result"></div>
 
-<button class="share" onclick="shareResult()">Share this result 🔗</button>
+<button class="share" onclick="shareResult()">Share 🔗</button>
 
 </div>
 
@@ -182,8 +196,8 @@ button{
 
 <script>
 
-let isLoading=false;
 let lastResult="";
+let currentLocation="";
 
 const input = document.getElementById("locationInput");
 const result = document.getElementById("result");
@@ -193,8 +207,8 @@ const data = {
 "south korea":{status:"SAFE",phone:"1339"},
 "france":{status:"SAFE",phone:"15"},
 "india":{status:"DANGER",phone:"102"},
-"kenya":{status:"WARNING",phone:"+254 20 2717077"},
-"united states":{status:"SAFE",phone:"1-800-426-4791"}
+"kenya":{status:"WARNING",phone:"+254207177000"},
+"united states":{status:"SAFE",phone:"18004264791"}
 };
 
 const cityMap = {
@@ -249,47 +263,45 @@ function normalize(v){
 return v.toLowerCase().trim();
 }
 
-function render(obj,locationName,isLoc=false){
-isLoading=false;
+function getCountry(val){
+return cityMap[val] || val;
+}
+
+function render(obj,name,isLoc=false){
 
 let explanation =
 obj.status==="SAFE"
-? "Water is treated and monitored with modern purification systems. Generally safe for drinking without boiling."
+? "✅ Clean, treated water with strong infrastructure. Safe for daily consumption."
 : obj.status==="DANGER"
-? "Water may contain bacteria or contaminants. Avoid drinking tap water. Use bottled or filtered water."
-: "Water quality varies. Boiling or filtering is strongly recommended before drinking.";
+? "🚫 High contamination risk. Avoid tap water. Use bottled or filtered water."
+: "⚠️ Water quality varies. Boil or filter before drinking.";
 
-let extra = isLoc ? "<div>📍 Within ~1km radius, infrastructure suggests similar water conditions</div>" : "";
+let extra = isLoc ? "<div>📍 Within ~1km radius, similar water conditions apply</div>" : "";
 
-lastResult = `${locationName}: ${obj.status}`;
+lastResult = `${name}: ${obj.status}`;
 
 result.innerHTML=`
 <b>${obj.status}</b><br>
 ${explanation}<br><br>
-📞 <a href="tel:${obj.phone}">Call local water authority</a>
+📞 <a href="tel:${obj.phone}">Call water authority</a>
 ${extra}
 `;
 }
 
 function checkWater(){
-if(isLoading) return;
-isLoading=true;
-
-suggestions.innerHTML="";
-result.innerHTML="💧 Checking...";
-
 let val=normalize(input.value);
-let country=cityMap[val]||val;
+if(!val){
+result.innerHTML="❗ Enter a location";
+return;
+}
 
-setTimeout(()=>{
+let country=getCountry(val);
 let obj=data[country] || {status:"WARNING",phone:""};
+
 render(obj,input.value);
-},700);
 }
 
 function useMyLocation(){
-if(isLoading) return;
-isLoading=true;
 
 result.innerHTML="📡 Getting location...";
 suggestions.innerHTML="";
@@ -309,20 +321,18 @@ loc.address.country;
 input.value = city;
 
 let val=normalize(city);
-let country=cityMap[val]||val;
+let country=getCountry(val);
 
 let obj=data[country] || {status:"WARNING",phone:""};
 
 render(obj,city,true);
 
 }catch{
-isLoading=false;
 result.innerHTML="❌ Location failed";
 }
 
 },()=>{
-isLoading=false;
-result.innerHTML="❌ Location permission denied";
+result.innerHTML="❌ Permission denied";
 });
 }
 
@@ -340,7 +350,7 @@ url:window.location.href
 });
 }else{
 navigator.clipboard.writeText(lastResult);
-alert("Copied to clipboard!");
+alert("Copied!");
 }
 }
 
