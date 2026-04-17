@@ -6,7 +6,7 @@
 
 <title>DrinkSafe</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
 body {
@@ -15,7 +15,7 @@ body {
   font-family:'Inter', sans-serif;
 }
 
-/* 상단 */
+/* 🔥 상단바 (프로페셔널) */
 .topbar{
   display:flex;
   justify-content:space-between;
@@ -23,8 +23,15 @@ body {
   padding:14px 20px;
   background:white;
   border-bottom:1px solid #e8e5de;
-  font-size:14px;
-  color:#9aa0a6;
+  font-size:13px;
+  color:#6f7680;
+  font-weight:500;
+  letter-spacing:0.5px;
+}
+
+.brand{
+  font-weight:600;
+  color:#0B1F3B;
 }
 
 .globe{
@@ -39,36 +46,37 @@ body {
 .container{
   max-width:460px;
   margin:auto;
-  padding:36px 20px;
+  padding:20px 20px 40px;
 }
 
-/* 제목 (축소) */
+/* 🔥 제목 (위로 올림) */
 h1{
   font-family:'Syne';
   font-size:38px;
   line-height:1.1;
   color:#0B1F3B;
+  margin-top:10px;
 }
 
 h1 span{
   color:#9aa0a6;
 }
 
-/* GIF */
+/* 🎬 GIF */
 .gif{
-  margin-top:14px;
+  margin-top:12px;
 }
 
 .gif iframe{
   width:100%;
-  height:220px;
+  height:210px;
   border:none;
   border-radius:14px;
 }
 
 /* 카드 */
 .card{
-  margin-top:20px;
+  margin-top:18px;
   background:white;
   border-radius:20px;
   padding:16px;
@@ -122,16 +130,18 @@ button{
   cursor:pointer;
 }
 
+/* 결과 */
 #result{
   margin-top:14px;
   font-size:15px;
+  line-height:1.5;
 }
 
-/* ✨ 반짝 별 */
+/* ✨ 브랜드 문구 */
 .sparkles{
   text-align:center;
-  margin-top:20px;
-  font-size:18px;
+  margin-top:22px;
+  font-size:16px;
   animation:twinkle 1.5s infinite alternate;
 }
 
@@ -143,8 +153,9 @@ button{
 .subtitle{
   text-align:center;
   font-size:12px;
-  color:#aaa;
+  color:#9aa0a6;
   margin-top:6px;
+  line-height:1.4;
 }
 </style>
 </head>
@@ -152,7 +163,7 @@ button{
 <body onclick="hideSuggestions(event)">
 
 <div class="topbar">
-  <div>Patrick Labs AI</div>
+  <div class="brand">Patrick Labs AI</div>
   <div class="globe">🌍</div>
 </div>
 
@@ -163,12 +174,12 @@ button{
   <span>this water?</span>
 </h1>
 
-<!-- 🎬 GIF -->
+<!-- GIF -->
 <div class="gif">
 <iframe src="https://giphy.com/embed/nfnF2zVPRemXu" allowFullScreen></iframe>
 </div>
 
-<!-- 🔍 카드 -->
+<!-- 카드 -->
 <div class="card">
 
 <div class="input-wrap">
@@ -186,10 +197,11 @@ button{
 
 </div>
 
-<!-- ✨ 별 + WHO -->
+<!-- 브랜드 메시지 -->
 <div class="sparkles">✨ ✨ ✨</div>
 <div class="subtitle">
-  Based on WHO, CDC, UNICEF & local authorities
+  AI-powered water safety intelligence platform<br>
+  Based on WHO, CDC, UNICEF & global data
 </div>
 
 </div>
@@ -199,7 +211,7 @@ button{
 let isLoading=false;
 
 const data = {
-"south korea":{status:"SAFE",msg:"Tap water is safe."},
+"south korea":{status:"SAFE",msg:"Tap water is safe to drink."},
 "france":{status:"SAFE",msg:"Safe to drink."},
 "india":{status:"DANGER",msg:"Do not drink tap water."},
 "kenya":{status:"WARNING",msg:"Boil or filter water."}
@@ -215,6 +227,7 @@ const cityMap = {
 
 const popular=["Mumbai 🇮🇳","Delhi 🇮🇳","Paris 🇫🇷","Seoul 🇰🇷","Nairobi 🇰🇪"];
 
+// 인기
 function showPopular(){
 let box=document.getElementById("suggestions");
 box.innerHTML="";
@@ -230,6 +243,7 @@ box.appendChild(d);
 });
 }
 
+// 자동완성
 function showSuggestions(){
 let input=location.value.toLowerCase();
 let box=document.getElementById("suggestions");
@@ -248,6 +262,7 @@ box.appendChild(d);
 }
 }
 
+// 닫기
 function hideSuggestions(e){
 if(!location.contains(e.target)){
 document.getElementById("suggestions").innerHTML="";
@@ -258,10 +273,13 @@ function normalize(i){
 return i.toLowerCase().trim();
 }
 
+// 결과
 function render(d,isLoc=false){
 isLoading=false;
 
-let extra=isLoc?"<div>📍 Within ~1km radius tap water is generally assessed</div>":"";
+let extra=isLoc
+? "<div style='margin-top:6px;'>📍 Within ~1km radius, tap water is generally assessed</div>"
+: "";
 
 result.innerHTML=`
 <b>${d.status}</b><br>
@@ -270,6 +288,7 @@ ${extra}
 `;
 }
 
+// 검색
 function checkWater(){
 if(isLoading) return;
 isLoading=true;
@@ -283,11 +302,12 @@ setTimeout(()=>{
 if(data[c]) render(data[c]);
 else{
 isLoading=false;
-result.innerHTML="Checking...";
+result.innerHTML="💧 Water data not available yet";
 }
 },800);
 }
 
+// GPS
 function useMyLocation(){
 if(isLoading) return;
 isLoading=true;
@@ -314,12 +334,12 @@ let c=cityMap[normalize(city)]||normalize(city);
 if(data[c]) render(data[c],true);
 else{
 isLoading=false;
-result.innerHTML="Checking...";
+result.innerHTML="💧 Water data not available";
 }
 
 }catch{
 isLoading=false;
-result.innerHTML="❌ Location failed";
+result.innerHTML="❌ Location error";
 }
 
 },()=>{
