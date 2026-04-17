@@ -15,6 +15,7 @@ body {
   font-family:'Inter', sans-serif;
 }
 
+/* 상단 */
 .topbar{
   display:flex;
   justify-content:space-between;
@@ -38,13 +39,14 @@ body {
 .container{
   max-width:460px;
   margin:auto;
-  padding:40px 20px;
+  padding:36px 20px;
 }
 
+/* 제목 (축소) */
 h1{
   font-family:'Syne';
-  font-size:44px;
-  line-height:1.05;
+  font-size:38px;
+  line-height:1.1;
   color:#0B1F3B;
 }
 
@@ -52,25 +54,21 @@ h1 span{
   color:#9aa0a6;
 }
 
-.subtitle{
-  margin-top:12px;
-  font-size:13px;
-  color:#b0b3b8;
+/* GIF */
+.gif{
+  margin-top:14px;
 }
 
-/* 🌊 GIF */
-.waterfall{
-  margin-top:12px;
-}
-
-.waterfall img{
+.gif iframe{
   width:100%;
-  border-radius:12px;
+  height:220px;
+  border:none;
+  border-radius:14px;
 }
 
 /* 카드 */
 .card{
-  margin-top:30px;
+  margin-top:20px;
   background:white;
   border-radius:20px;
   padding:16px;
@@ -127,7 +125,26 @@ button{
 #result{
   margin-top:14px;
   font-size:15px;
-  line-height:1.5;
+}
+
+/* ✨ 반짝 별 */
+.sparkles{
+  text-align:center;
+  margin-top:20px;
+  font-size:18px;
+  animation:twinkle 1.5s infinite alternate;
+}
+
+@keyframes twinkle{
+  from{opacity:0.5;}
+  to{opacity:1;}
+}
+
+.subtitle{
+  text-align:center;
+  font-size:12px;
+  color:#aaa;
+  margin-top:6px;
 }
 </style>
 </head>
@@ -146,15 +163,12 @@ button{
   <span>this water?</span>
 </h1>
 
-<div class="subtitle">
-  Based on WHO, CDC, UNICEF & local authorities
+<!-- 🎬 GIF -->
+<div class="gif">
+<iframe src="https://giphy.com/embed/nfnF2zVPRemXu" allowFullScreen></iframe>
 </div>
 
-<!-- 🌊 Giphy 폭포 -->
-<div class="waterfall">
-  <img src="https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif">
-</div>
-
+<!-- 🔍 카드 -->
 <div class="card">
 
 <div class="input-wrap">
@@ -172,21 +186,25 @@ button{
 
 </div>
 
+<!-- ✨ 별 + WHO -->
+<div class="sparkles">✨ ✨ ✨</div>
+<div class="subtitle">
+  Based on WHO, CDC, UNICEF & local authorities
+</div>
+
 </div>
 
 <script>
 
-let isLoading = false;
+let isLoading=false;
 
-// 데이터
 const data = {
-"south korea":{status:"SAFE",msg:"Tap water is safe.",desc:"Highly regulated.",phone:"+822120"},
-"france":{status:"SAFE",msg:"Safe to drink.",desc:"EU regulated.",phone:"+33140405050"},
-"india":{status:"DANGER",msg:"Do not drink.",desc:"High contamination risk.",phone:"+911123792000"},
-"kenya":{status:"WARNING",msg:"Boil water.",desc:"Varies by region.",phone:"+254202718707"}
+"south korea":{status:"SAFE",msg:"Tap water is safe."},
+"france":{status:"SAFE",msg:"Safe to drink."},
+"india":{status:"DANGER",msg:"Do not drink tap water."},
+"kenya":{status:"WARNING",msg:"Boil or filter water."}
 };
 
-// 도시
 const cityMap = {
 "seoul":"south korea",
 "paris":"france",
@@ -195,132 +213,118 @@ const cityMap = {
 "nairobi":"kenya"
 };
 
-const popular = ["Mumbai 🇮🇳","Delhi 🇮🇳","Paris 🇫🇷","Seoul 🇰🇷","Nairobi 🇰🇪"];
+const popular=["Mumbai 🇮🇳","Delhi 🇮🇳","Paris 🇫🇷","Seoul 🇰🇷","Nairobi 🇰🇪"];
 
-// 인기
 function showPopular(){
 let box=document.getElementById("suggestions");
 box.innerHTML="";
 popular.forEach(c=>{
-let div=document.createElement("div");
-div.className="sug";
-div.innerText=c;
-div.onclick=()=>{
-document.getElementById("location").value=c.split(" ")[0];
+let d=document.createElement("div");
+d.className="sug";
+d.innerText=c;
+d.onclick=()=>{
+location.value=c.split(" ")[0];
 box.innerHTML="";
 };
-box.appendChild(div);
+box.appendChild(d);
 });
 }
 
-// 자동완성
 function showSuggestions(){
-let input=document.getElementById("location").value.toLowerCase();
+let input=location.value.toLowerCase();
 let box=document.getElementById("suggestions");
 box.innerHTML="";
 for(let key in cityMap){
 if(key.includes(input)){
-let div=document.createElement("div");
-div.className="sug";
-div.innerText=key;
-div.onclick=()=>{
-document.getElementById("location").value=key;
+let d=document.createElement("div");
+d.className="sug";
+d.innerText=key;
+d.onclick=()=>{
+location.value=key;
 box.innerHTML="";
 };
-box.appendChild(div);
+box.appendChild(d);
 }
 }
 }
 
-// 닫기
 function hideSuggestions(e){
-const box = document.getElementById("suggestions");
-const input = document.getElementById("location");
-if(!input.contains(e.target)){
-  box.innerHTML="";
+if(!location.contains(e.target)){
+document.getElementById("suggestions").innerHTML="";
 }
 }
 
-// normalize
 function normalize(i){
 return i.toLowerCase().trim();
 }
 
-// 결과
-function render(d, isLocation=false){
-isLoading = false;
+function render(d,isLoc=false){
+isLoading=false;
 
-let color="#a05c00";
-if(d.status==="SAFE") color="#1a7a4a";
-if(d.status==="DANGER") color="#c0272d";
+let extra=isLoc?"<div>📍 Within ~1km radius tap water is generally assessed</div>":"";
 
-let extra = isLocation
-? "<div style='margin-top:8px;'>📍 Within ~1km radius, tap water via public system is generally assessed.</div>"
-: "";
-
-document.getElementById("result").innerHTML=
-`<div style="color:${color};font-weight:600">${d.status}</div>
-<div>${d.msg}</div>
-<div style="font-size:13px;color:#666">${d.desc}</div>
+result.innerHTML=`
+<b>${d.status}</b><br>
+${d.msg}
 ${extra}
-<div style="margin-top:8px;">
-📞 <a href="tel:${d.phone}">Call local authority</a>
-</div>`;
+`;
 }
 
-// 검색
 function checkWater(){
 if(isLoading) return;
-isLoading = true;
+isLoading=true;
 
-document.getElementById("suggestions").innerHTML="";
-document.getElementById("result").innerHTML="💧 Checking...";
+suggestions.innerHTML="";
+result.innerHTML="💧 Checking...";
 
-let input=document.getElementById("location").value;
-let country=cityMap[normalize(input)]||normalize(input);
+let c=cityMap[normalize(location.value)]||normalize(location.value);
 
 setTimeout(()=>{
-if(data[country]){
-render(data[country]);
-}else{
+if(data[c]) render(data[c]);
+else{
 isLoading=false;
-document.getElementById("result").innerHTML="💧 Water quality is being verified...";
+result.innerHTML="Checking...";
 }
 },800);
 }
 
-// GPS
 function useMyLocation(){
 if(isLoading) return;
-isLoading = true;
+isLoading=true;
 
-document.getElementById("suggestions").innerHTML="";
-document.getElementById("result").innerHTML="📡 Getting location...";
+result.innerHTML="📡 Getting location...";
+suggestions.innerHTML="";
 
 navigator.geolocation.getCurrentPosition(async(pos)=>{
 
 try{
-let res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
-let loc = await res.json();
+let res=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
+let loc=await res.json();
 
-let city = loc.address.city || loc.address.town || loc.address.state;
+let city=
+loc.address.city||
+loc.address.town||
+loc.address.state||
+loc.address.country;
 
-document.getElementById("location").value = city;
+location.value=city;
 
-let country = cityMap[normalize(city)] || normalize(city);
+let c=cityMap[normalize(city)]||normalize(city);
 
-if(data[country]){
-render(data[country], true);
-}else{
+if(data[c]) render(data[c],true);
+else{
 isLoading=false;
-document.getElementById("result").innerHTML="💧 Water quality is being verified...";
+result.innerHTML="Checking...";
 }
 
-}catch(e){
+}catch{
 isLoading=false;
-document.getElementById("result").innerHTML="❌ Location error";
+result.innerHTML="❌ Location failed";
 }
 
+},()=>{
+isLoading=false;
+result.innerHTML="❌ Location permission denied";
 });
 }
 
