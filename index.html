@@ -10,38 +10,102 @@
 
 <style>
 body{margin:0;background:#f5f4f0;font-family:'Inter';}
-.topbar{display:flex;justify-content:space-between;padding:14px 20px;background:white;border-bottom:1px solid #e8e5de;font-size:13px;color:#9aa0a6;font-family:'Space Grotesk';}
-.globe{animation:spin 6s linear infinite;}
-@keyframes spin{from{transform:rotate(0);}to{transform:rotate(360deg);}}
 
-.container{max-width:460px;margin:auto;padding:18px;}
+.topbar{
+display:flex;
+justify-content:space-between;
+padding:14px 20px;
+background:white;
+border-bottom:1px solid #e8e5de;
+font-size:13px;
+color:#9aa0a6;
+font-family:'Space Grotesk';
+}
 
-h1{font-family:'Syne';font-size:30px;color:#0B1F3B;margin:0;}
-h1 span{color:#9aa0a6;}
+.globe{
+animation:spin 6s linear infinite;
+}
 
-.tagline{font-size:13px;margin-top:-4px;color:#7a7f87;}
+@keyframes spin{
+from{transform:rotate(0);}
+to{transform:rotate(360deg);}
+}
 
-.gif iframe{width:100%;height:200px;border:none;border-radius:14px;margin-top:10px;pointer-events:none;}
+.container{
+max-width:460px;
+margin:auto;
+padding:18px;
+}
 
-.card{margin-top:16px;background:white;border-radius:20px;padding:16px;border:1px solid #e8e5de;}
+h1{
+font-family:'Syne';
+font-size:30px;
+color:#0B1F3B;
+margin:0;
+}
 
-.input-wrap{position:relative;}
+h1 span{
+color:#9aa0a6;
+}
 
-input{width:100%;padding:14px;border-radius:12px;border:1px solid #e5e5e5;background:#f7f7f7;}
+.tagline{
+font-size:13px;
+margin-top:-4px;
+color:#7a7f87;
+}
 
-#suggestions{position:absolute;top:52px;left:0;right:0;background:white;border-radius:12px;border:1px solid #e5e5e5;max-height:220px;overflow-y:auto;z-index:10;}
+.tagline span{
+animation:flash 1s infinite alternate;
+}
 
-.sug{padding:12px;cursor:pointer;}
-.sug:hover{background:#f0f0f0;}
+@keyframes flash{
+from{opacity:0.4;}
+to{opacity:1;}
+}
 
-button{width:100%;margin-top:10px;padding:14px;border-radius:12px;border:none;background:#0B1F3B;color:white;}
-.share{background:#e9ecf1;color:#0B1F3B;}
+.gif iframe{
+width:100%;
+height:200px;
+border:none;
+border-radius:14px;
+margin-top:10px;
+pointer-events:none;
+}
 
-#result{margin-top:14px;font-family:'Quicksand';}
+.card{
+margin-top:16px;
+background:white;
+border-radius:20px;
+padding:16px;
+border:1px solid #e8e5de;
+text-align:center;
+}
+
+button{
+width:100%;
+margin-top:12px;
+padding:16px;
+border-radius:14px;
+border:none;
+background:#0B1F3B;
+color:white;
+font-size:16px;
+}
+
+.share{
+background:#e9ecf1;
+color:#0B1F3B;
+}
+
+#result{
+margin-top:16px;
+font-family:'Quicksand';
+font-size:16px;
+}
 </style>
 </head>
 
-<body onclick="hideSuggestions(event)">
+<body>
 
 <div class="topbar">
 <div>Patrick Labs AI</div>
@@ -50,11 +114,14 @@ button{width:100%;margin-top:10px;padding:14px;border-radius:12px;border:none;ba
 
 <div class="container">
 
-<h1>Can I drink<br><span>this water?</span></h1>
+<h1>
+Can I drink<br>
+<span>this water?</span>
+</h1>
 
 <div class="tagline">
-⚡️ AI-powered live water cloud<br>
-⚡️ Based on WHO, CDC & UNICEF
+<span>⚡️</span> AI-powered live water cloud<br>
+<span>⚡️</span> Based on WHO, CDC & UNICEF
 </div>
 
 <div class="gif">
@@ -63,33 +130,27 @@ button{width:100%;margin-top:10px;padding:14px;border-radius:12px;border:none;ba
 
 <div class="card">
 
-<div class="input-wrap">
-<input id="locationInput" placeholder="Enter city or country"
-onfocus="showPopular()" oninput="showSuggestions()">
-<div id="suggestions"></div>
-</div>
-
-<button onclick="checkWater()">Check water 💧</button>
-<button onclick="useMyLocation()">Use my location 📍</button>
+<button onclick="useMyLocation()">
+📍 Check water near me
+</button>
 
 <div id="result"></div>
 
-<button class="share" onclick="shareResult()">Share 🔗</button>
+<button class="share" onclick="shareResult()">
+Share 🔗
+</button>
 
 </div>
+
 </div>
 
 <script>
 
-const input=document.getElementById("locationInput");
-const result=document.getElementById("result");
-const suggestions=document.getElementById("suggestions");
+const result = document.getElementById("result");
+let lastResult = "";
 
-let lastResult="";
-
-/* 🌍 국가 데이터 */
+/* 🌍 데이터 */
 const data={
-"global":{status:"WARNING",phone:""},
 "south korea":{status:"SAFE",phone:"+821339"},
 "japan":{status:"SAFE",phone:"+81119"},
 "france":{status:"SAFE",phone:"+3315"},
@@ -98,138 +159,66 @@ const data={
 "vietnam":{status:"WARNING",phone:"+84908115678"},
 "kenya":{status:"WARNING",phone:"+254202717077"},
 "nigeria":{status:"DANGER",phone:"+2347000000000"},
-"south africa":{status:"WARNING",phone:"+27123000000"}
+"south africa":{status:"WARNING",phone:"+27123000000"},
+"global":{status:"WARNING",phone:""}
 };
 
-const countries=Object.keys(data);
+function render(obj,place){
 
-/* 🌆 대량 도시 (100+) */
-const cityMap={
-"seoul":"south korea","busan":"south korea",
-"tokyo":"japan","osaka":"japan",
-"paris":"france","lyon":"france",
-"new york":"united states","los angeles":"united states","chicago":"united states",
-"mumbai":"india","delhi":"india","bangalore":"india",
-"hanoi":"vietnam","ho chi minh":"vietnam","saigon":"vietnam",
-"nairobi":"kenya","mombasa":"kenya",
-"lagos":"nigeria","abuja":"nigeria",
-"cape town":"south africa","johannesburg":"south africa",
-
-/* 추가 글로벌 도시 */
-"london":"united kingdom","berlin":"germany","rome":"italy",
-"bangkok":"thailand","jakarta":"indonesia",
-"manila":"philippines","dubai":"uae",
-"cairo":"egypt","accra":"ghana","addis ababa":"ethiopia",
-"dakar":"senegal","casablanca":"morocco"
-};
-
-const validLocations=[
-...Object.keys(cityMap),
-...countries
-];
-
-/* 🔥 핵심 */
-function getCountry(val){
-val=val.toLowerCase().trim();
-
-if(data[val]) return val;
-if(cityMap[val]) return cityMap[val];
-
-return null;
-}
-
-function render(obj,name){
-let text=
+let explanation =
 obj.status==="SAFE"
-? "✅ Safe tap water."
+? "✅ Tap water is safe to drink in this area."
 : obj.status==="DANGER"
-? "🚫 Do NOT drink."
-: "⚠️ Boil before drinking.";
+? "🚫 Unsafe water. Avoid drinking completely."
+: "⚠️ Boil or filter water before drinking.";
 
-lastResult=name+" "+obj.status;
+lastResult = place + " - " + obj.status;
 
-result.innerHTML=`
+result.innerHTML = `
+<b>${place}</b><br><br>
 <b>${obj.status}</b><br>
-${text}<br><br>
-${obj.phone?`📞 <a href="tel:${obj.phone}">Call water authority</a>`:""}
+${explanation}<br><br>
+${obj.phone ? `📞 <a href="tel:${obj.phone}">Call water authority</a>` : ""}
 `;
 }
 
-function selectItem(name){
-input.value=name;
-suggestions.innerHTML="";
-render(data[getCountry(name)],name);
-}
-
-function showPopular(){
-suggestions.innerHTML="";
-validLocations.slice(0,12).forEach(v=>{
-let d=document.createElement("div");
-d.className="sug";
-d.innerText=v;
-d.onclick=()=>selectItem(v);
-suggestions.appendChild(d);
-});
-}
-
-function showSuggestions(){
-let val=input.value.toLowerCase();
-suggestions.innerHTML="";
-
-if(!val){showPopular();return;}
-
-validLocations.forEach(v=>{
-if(v.includes(val)){
-let d=document.createElement("div");
-d.className="sug";
-d.innerText=v;
-d.onclick=()=>selectItem(v);
-suggestions.appendChild(d);
-}
-});
-}
-
-function hideSuggestions(e){
-if(!input.contains(e.target)){
-suggestions.innerHTML="";
-}
-}
-
-function checkWater(){
-let val=input.value.trim();
-let country=getCountry(val);
-
-if(!country){
-result.innerHTML="❌ Enter a valid city or country";
-return;
-}
-
-render(data[country],val);
-}
-
 function useMyLocation(){
-result.innerHTML="📡 Getting location...";
-suggestions.innerHTML="";
+
+result.innerHTML="📡 Detecting location...";
 
 navigator.geolocation.getCurrentPosition(async(pos)=>{
-let res=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
-let loc=await res.json();
 
-let place=loc.address.city||loc.address.state||loc.address.country;
+let res = await fetch(
+`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`
+);
 
-input.value=place;
+let loc = await res.json();
 
-let country=getCountry(place) || "global";
-render(data[country],place);
+let country = loc.address.country?.toLowerCase() || "global";
+let city =
+loc.address.city ||
+loc.address.town ||
+loc.address.state ||
+loc.address.country;
 
+if(!data[country]) country="global";
+
+render(data[country], city);
+
+},()=>{
+result.innerHTML="❌ Location permission denied";
 });
 }
 
 function shareResult(){
-if(!lastResult){alert("Check first");return;}
+if(!lastResult){
+alert("Check water first!");
+return;
+}
+
 navigator.share
 ? navigator.share({text:lastResult})
-: (navigator.clipboard.writeText(lastResult),alert("Copied"));
+: (navigator.clipboard.writeText(lastResult), alert("Copied!"));
 }
 
 </script>
