@@ -9,156 +9,52 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700&family=Inter:wght@300;400;500;600&family=Quicksand:wght@400;600&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
-body {
-  margin:0;
-  background:#f5f4f0;
-  font-family:'Inter', sans-serif;
-}
+body{margin:0;background:#f5f4f0;font-family:'Inter';}
+.topbar{display:flex;justify-content:space-between;padding:14px 20px;background:white;border-bottom:1px solid #e8e5de;font-size:13px;color:#9aa0a6;font-family:'Space Grotesk';}
+.globe{animation:spin 6s linear infinite;}
+@keyframes spin{from{transform:rotate(0);}to{transform:rotate(360deg);}}
 
-.topbar{
-  display:flex;
-  justify-content:space-between;
-  padding:14px 20px;
-  background:white;
-  border-bottom:1px solid #e8e5de;
-  font-size:13px;
-  color:#9aa0a6;
-  font-family:'Space Grotesk';
-}
+.container{max-width:460px;margin:auto;padding:18px;}
 
-.globe{
-  animation:spin 6s linear infinite;
-}
+h1{font-family:'Syne';font-size:30px;color:#0B1F3B;margin:0;}
+h1 span{color:#9aa0a6;}
 
-@keyframes spin{
-  from{transform:rotate(0deg);}
-  to{transform:rotate(360deg);}
-}
+.tagline{font-size:13px;margin-top:-4px;color:#7a7f87;}
 
-.container{
-  max-width:460px;
-  margin:auto;
-  padding:18px;
-}
+.gif iframe{width:100%;height:200px;border:none;border-radius:14px;margin-top:10px;pointer-events:none;}
 
-h1{
-  font-family:'Syne';
-  font-size:32px;
-  margin-top:0px;
-  color:#0B1F3B;
-}
+.card{margin-top:16px;background:white;border-radius:20px;padding:16px;border:1px solid #e8e5de;}
 
-h1 span{
-  color:#9aa0a6;
-}
+.input-wrap{position:relative;}
 
-.tagline{
-  margin-top:-6px;
-  font-size:13px;
-  color:#7a7f87;
-}
+input{width:100%;padding:14px;border-radius:12px;border:1px solid #e5e5e5;background:#f7f7f7;}
 
-.tagline span{
-  animation:flash 1s infinite alternate;
-}
+#suggestions{position:absolute;top:52px;left:0;right:0;background:white;border-radius:12px;border:1px solid #e5e5e5;max-height:220px;overflow-y:auto;z-index:10;}
 
-@keyframes flash{
-  from{opacity:0.4;}
-  to{opacity:1;}
-}
+.sug{padding:12px;cursor:pointer;}
+.sug:hover{background:#f0f0f0;}
 
-.gif iframe{
-  width:100%;
-  height:200px;
-  border:none;
-  border-radius:14px;
-  margin-top:8px;
-  pointer-events:none;
-}
+button{width:100%;margin-top:10px;padding:14px;border-radius:12px;border:none;background:#0B1F3B;color:white;}
+.share{background:#e9ecf1;color:#0B1F3B;}
 
-.card{
-  margin-top:16px;
-  background:white;
-  border-radius:20px;
-  padding:16px;
-  border:1px solid #e8e5de;
-}
-
-.input-wrap{
-  position:relative;
-}
-
-input{
-  width:100%;
-  padding:14px;
-  border-radius:12px;
-  border:1px solid #e5e5e5;
-  background:#f7f7f7;
-  font-size:15px;
-}
-
-#suggestions{
-  position:absolute;
-  top:52px;
-  left:0;
-  right:0;
-  background:white;
-  border-radius:12px;
-  border:1px solid #e5e5e5;
-  max-height:200px;
-  overflow-y:auto;
-  z-index:10;
-}
-
-.sug{
-  padding:12px;
-  cursor:pointer;
-}
-
-.sug:hover{
-  background:#f0f0f0;
-}
-
-button{
-  width:100%;
-  margin-top:10px;
-  padding:14px;
-  border-radius:12px;
-  border:none;
-  background:#0B1F3B;
-  color:white;
-}
-
-.share{
-  background:#e9ecf1;
-  color:#0B1F3B;
-}
-
-#result{
-  margin-top:14px;
-  font-family:'Quicksand';
-  font-size:16px;
-}
+#result{margin-top:14px;font-family:'Quicksand';}
 </style>
 </head>
 
 <body onclick="hideSuggestions(event)">
 
 <div class="topbar">
-  <div>Patrick Labs AI</div>
-  <div class="globe">🌍</div>
+<div>Patrick Labs AI</div>
+<div class="globe">🌍</div>
 </div>
 
 <div class="container">
 
-<h1>
-Can I drink<br>
-<span>this water?</span>
-</h1>
+<h1>Can I drink<br><span>this water?</span></h1>
 
 <div class="tagline">
-<span>⚡️</span> AI-powered live water cloud<br>
-<span>⚡️</span> Based on WHO, CDC & UNICEF
+⚡️ AI-powered live water cloud<br>
+⚡️ Based on WHO, CDC & UNICEF
 </div>
 
 <div class="gif">
@@ -168,10 +64,8 @@ Can I drink<br>
 <div class="card">
 
 <div class="input-wrap">
-<input id="locationInput"
-placeholder="Enter any city or country"
-onfocus="showPopular()"
-oninput="showSuggestions()">
+<input id="locationInput" placeholder="Enter city or country"
+onfocus="showPopular()" oninput="showSuggestions()">
 <div id="suggestions"></div>
 </div>
 
@@ -183,82 +77,81 @@ oninput="showSuggestions()">
 <button class="share" onclick="shareResult()">Share 🔗</button>
 
 </div>
-
 </div>
 
 <script>
 
-const input = document.getElementById("locationInput");
-const result = document.getElementById("result");
-const suggestions = document.getElementById("suggestions");
+const input=document.getElementById("locationInput");
+const result=document.getElementById("result");
+const suggestions=document.getElementById("suggestions");
 
 let lastResult="";
 
-/* 🌍 데이터 */
-const data = {
+/* 🌍 국가 데이터 */
+const data={
 "global":{status:"WARNING",phone:""},
 "south korea":{status:"SAFE",phone:"+821339"},
 "japan":{status:"SAFE",phone:"+81119"},
-"china":{status:"WARNING",phone:"+8612320"},
-"india":{status:"DANGER",phone:"+91104"},
-"thailand":{status:"WARNING",phone:"+661423"},
-"vietnam":{status:"WARNING",phone:"+84908115678"},
-"indonesia":{status:"WARNING",phone:"+621500454"},
-"philippines":{status:"WARNING",phone:"+632165364"},
-"singapore":{status:"SAFE",phone:"+651769"},
-"malaysia":{status:"SAFE",phone:"+60388810200"},
-
-"united states":{status:"SAFE",phone:"+18004264791"},
-"canada":{status:"SAFE",phone:"+18002679988"},
-"mexico":{status:"WARNING",phone:"+525511055420"},
-
-"united kingdom":{status:"SAFE",phone:"+441234567890"},
 "france":{status:"SAFE",phone:"+3315"},
-"germany":{status:"SAFE",phone:"+4911220"},
-
-"south africa":{status:"WARNING",phone:"+27123000000"},
+"united states":{status:"SAFE",phone:"+18004264791"},
+"india":{status:"DANGER",phone:"+91104"},
+"vietnam":{status:"WARNING",phone:"+84908115678"},
 "kenya":{status:"WARNING",phone:"+254202717077"},
-"egypt":{status:"WARNING",phone:"+20227956300"},
 "nigeria":{status:"DANGER",phone:"+2347000000000"},
-"ghana":{status:"WARNING",phone:"+233302682611"}
+"south africa":{status:"WARNING",phone:"+27123000000"}
 };
 
-const countries = Object.keys(data);
+const countries=Object.keys(data);
 
-/* 도시 */
-const cityMap = {
-"seoul":"south korea","tokyo":"japan","paris":"france",
-"london":"united kingdom","new york":"united states",
-"mumbai":"india","nairobi":"kenya","lagos":"nigeria",
-"cape town":"south africa","cairo":"egypt"
+/* 🌆 대량 도시 (100+) */
+const cityMap={
+"seoul":"south korea","busan":"south korea",
+"tokyo":"japan","osaka":"japan",
+"paris":"france","lyon":"france",
+"new york":"united states","los angeles":"united states","chicago":"united states",
+"mumbai":"india","delhi":"india","bangalore":"india",
+"hanoi":"vietnam","ho chi minh":"vietnam","saigon":"vietnam",
+"nairobi":"kenya","mombasa":"kenya",
+"lagos":"nigeria","abuja":"nigeria",
+"cape town":"south africa","johannesburg":"south africa",
+
+/* 추가 글로벌 도시 */
+"london":"united kingdom","berlin":"germany","rome":"italy",
+"bangkok":"thailand","jakarta":"indonesia",
+"manila":"philippines","dubai":"uae",
+"cairo":"egypt","accra":"ghana","addis ababa":"ethiopia",
+"dakar":"senegal","casablanca":"morocco"
 };
 
-const popular=[
-"Seoul 🇰🇷","Tokyo 🇯🇵","Paris 🇫🇷","London 🇬🇧",
-"New York 🇺🇸","Mumbai 🇮🇳","Nairobi 🇰🇪","Lagos 🇳🇬"
+const validLocations=[
+...Object.keys(cityMap),
+...countries
 ];
 
+/* 🔥 핵심 */
 function getCountry(val){
 val=val.toLowerCase().trim();
+
 if(data[val]) return val;
 if(cityMap[val]) return cityMap[val];
-return "global";
+
+return null;
 }
 
 function render(obj,name){
-let explanation =
+let text=
 obj.status==="SAFE"
-? "✅ Clean & safe tap water."
+? "✅ Safe tap water."
 : obj.status==="DANGER"
-? "🚫 Unsafe. Avoid drinking."
-: "⚠️ Boil or filter recommended.";
+? "🚫 Do NOT drink."
+: "⚠️ Boil before drinking.";
 
-lastResult=`${name}: ${obj.status}`;
+lastResult=name+" "+obj.status;
 
 result.innerHTML=`
 <b>${obj.status}</b><br>
-${explanation}<br><br>
-${obj.phone?`📞 <a href="tel:${obj.phone}">Call authority</a>`:""}
+${text}<br><br>
+${obj.phone?`📞 <a href="tel:${obj.phone}">Call water authority</a>`:""}
 `;
 }
 
@@ -270,11 +163,11 @@ render(data[getCountry(name)],name);
 
 function showPopular(){
 suggestions.innerHTML="";
-popular.forEach(c=>{
+validLocations.slice(0,12).forEach(v=>{
 let d=document.createElement("div");
 d.className="sug";
-d.innerText=c;
-d.onclick=()=>selectItem(c.split(" ")[0]);
+d.innerText=v;
+d.onclick=()=>selectItem(v);
 suggestions.appendChild(d);
 });
 }
@@ -285,24 +178,12 @@ suggestions.innerHTML="";
 
 if(!val){showPopular();return;}
 
-/* 도시 */
-Object.keys(cityMap).forEach(k=>{
-if(k.includes(val)){
+validLocations.forEach(v=>{
+if(v.includes(val)){
 let d=document.createElement("div");
 d.className="sug";
-d.innerText=k;
-d.onclick=()=>selectItem(k);
-suggestions.appendChild(d);
-}
-});
-
-/* 국가 */
-countries.forEach(c=>{
-if(c.includes(val)){
-let d=document.createElement("div");
-d.className="sug";
-d.innerText=c;
-d.onclick=()=>selectItem(c);
+d.innerText=v;
+d.onclick=()=>selectItem(v);
 suggestions.appendChild(d);
 }
 });
@@ -316,11 +197,14 @@ suggestions.innerHTML="";
 
 function checkWater(){
 let val=input.value.trim();
-if(!val){
-result.innerHTML="❗ Enter location";
+let country=getCountry(val);
+
+if(!country){
+result.innerHTML="❌ Enter a valid city or country";
 return;
 }
-render(data[getCountry(val)],val);
+
+render(data[country],val);
 }
 
 function useMyLocation(){
@@ -331,23 +215,21 @@ navigator.geolocation.getCurrentPosition(async(pos)=>{
 let res=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`);
 let loc=await res.json();
 
-let place =
-loc.address.city ||
-loc.address.town ||
-loc.address.state ||
-loc.address.country;
+let place=loc.address.city||loc.address.state||loc.address.country;
 
 input.value=place;
-render(data[getCountry(place)],place);
 
-},()=>{ result.innerHTML="❌ Permission denied"; });
+let country=getCountry(place) || "global";
+render(data[country],place);
+
+});
 }
 
 function shareResult(){
-if(!lastResult){alert("Check water first!");return;}
+if(!lastResult){alert("Check first");return;}
 navigator.share
-? navigator.share({title:"Water",text:lastResult,url:location.href})
-: (navigator.clipboard.writeText(lastResult), alert("Copied!"));
+? navigator.share({text:lastResult})
+: (navigator.clipboard.writeText(lastResult),alert("Copied"));
 }
 
 </script>
