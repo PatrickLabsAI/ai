@@ -94,13 +94,25 @@ animation:blinkLive 1.2s infinite;
 font-size:11px;color:#888;margin-left:6px;
 }
 
-/* ✅ Footer */
+/* footer */
 .footer{
-margin-top:24px;
+margin-top:14px; /* 👈 더 붙임 */
 font-size:11px;
 color:#9aa0a6;
 text-align:center;
 line-height:1.5;
+}
+
+/* 버튼 이모지 애니메이션 */
+.contact-emoji{
+display:inline-block;
+animation:float 2s ease-in-out infinite;
+}
+
+@keyframes float{
+0%{transform:translateY(0);}
+50%{transform:translateY(-2px);}
+100%{transform:translateY(0);}
 }
 
 .footer button{
@@ -172,13 +184,12 @@ padding:10px;
 
 </div>
 
-<!-- ✅ Footer (카드 밖) -->
 <div class="footer">
 This product is an asset of Patrick Labs AI. Data is provided for informational purposes only based on global standards (WHO, CDC, UNICEF) and may vary by local infrastructure.<br>
 Patrick Labs AI is not liable for individual health outcomes.
 
 <button onclick="window.location.href='mailto:patrick@patrick-labs.com'">
-문의하기
+Contact Team <span class="contact-emoji">💬</span>
 </button>
 </div>
 
