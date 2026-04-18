@@ -50,7 +50,19 @@ border:none;background:#0B1F3B;color:white;font-size:16px;
 margin-top:16px;font-family:'Quicksand';font-size:16px;
 }
 
-/* ✅ 지도 기본 숨김 */
+/* 로딩 애니메이션 */
+.loader{
+margin-top:16px;
+font-size:14px;
+animation:blink 1s infinite;
+}
+@keyframes blink{
+0%{opacity:0.3;}
+50%{opacity:1;}
+100%{opacity:0.3;}
+}
+
+/* 지도 */
 #map{
 display:none;
 height:180px;
@@ -67,6 +79,11 @@ margin-top:12px;
 .live{
 font-size:11px;background:#ff4d4d;color:white;
 padding:3px 6px;border-radius:6px;margin-left:6px;
+}
+.date{
+font-size:11px;
+color:#888;
+margin-left:6px;
 }
 </style>
 </head>
@@ -96,36 +113,32 @@ padding:3px 6px;border-radius:6px;margin-left:6px;
 <button onclick="useMyLocation()">Check water near me 💧✨</button>
 
 <div id="result"></div>
-
 <div id="map"></div>
 
+<!-- 📊 차트 -->
 <div class="chart">
-<b>Top Safe Countries <span class="live">LIVE</span></b>
 
-<div class="row">
-<div class="label">🇨🇭 Switzerland <span>95%</span></div>
-<div class="bar"><div class="fill" style="width:95%"></div></div>
-</div>
+<b>Top Safe Water Countries <span class="live">LIVE</span><span class="date">Apr 18, 2026</span></b>
 
-<div class="row">
-<div class="label">🇯🇵 Japan <span>93%</span></div>
-<div class="bar"><div class="fill" style="width:93%"></div></div>
-</div>
+<div class="row"><div class="label">🇨🇭 Switzerland <span>95%</span></div><div class="bar"><div class="fill" style="width:95%"></div></div></div>
+<div class="row"><div class="label">🇯🇵 Japan <span>93%</span></div><div class="bar"><div class="fill" style="width:93%"></div></div></div>
+<div class="row"><div class="label">🇰🇷 South Korea <span>92%</span></div><div class="bar"><div class="fill" style="width:92%"></div></div></div>
+<div class="row"><div class="label">🇩🇪 Germany <span>91%</span></div><div class="bar"><div class="fill" style="width:91%"></div></div></div>
+<div class="row"><div class="label">🇨🇦 Canada <span>90%</span></div><div class="bar"><div class="fill" style="width:90%"></div></div></div>
 
-<div class="row">
-<div class="label">🇰🇷 South Korea <span>92%</span></div>
-<div class="bar"><div class="fill" style="width:92%"></div></div>
-</div>
+<br>
 
-<div class="row">
-<div class="label">🇩🇪 Germany <span>91%</span></div>
-<div class="bar"><div class="fill" style="width:91%"></div></div>
-</div>
+<b>Warning Water Countries</b>
 
-<div class="row">
-<div class="label">🇨🇦 Canada <span>90%</span></div>
-<div class="bar"><div class="fill" style="width:90%"></div></div>
-</div>
+<div class="row"><div class="label">🇹🇭 Thailand <span>60%</span></div><div class="bar"><div class="fill" style="width:60%"></div></div></div>
+<div class="row"><div class="label">🇻🇳 Vietnam <span>58%</span></div><div class="bar"><div class="fill" style="width:58%"></div></div></div>
+
+<br>
+
+<b>Risk Water Countries</b>
+
+<div class="row"><div class="label">🇮🇳 India <span>30%</span></div><div class="bar"><div class="fill" style="width:30%"></div></div></div>
+<div class="row"><div class="label">🇳🇬 Nigeria <span>25%</span></div><div class="bar"><div class="fill" style="width:25%"></div></div></div>
 
 </div>
 
@@ -138,7 +151,6 @@ let map, marker;
 let loading=false;
 const result=document.getElementById("result");
 
-/* 데이터 */
 const data={
 "south korea":{status:"SAFE",phone:"+821339"},
 "japan":{status:"SAFE",phone:"+81119"},
@@ -152,7 +164,7 @@ const data={
 
 function normalizeCountry(name){
 name=name.toLowerCase();
-if(name.includes("korea")) return "south korea";
+if(name.includes("korea")||name.includes("대한민국")||name.includes("republic")) return "south korea";
 return name;
 }
 
@@ -162,17 +174,13 @@ let c=a.city||a.town||a.state;
 return d&&c?`${d}, ${c}`:c;
 }
 
-/* ✅ 지도 생성 안전하게 */
 function initMap(lat,lon){
-
 const mapDiv=document.getElementById("map");
 mapDiv.style.display="block";
 
 if(!map){
 map=L.map('map').setView([lat,lon],13);
-
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
 marker=L.marker([lat,lon]).addTo(map);
 }else{
 map.setView([lat,lon],13);
@@ -205,7 +213,7 @@ function useMyLocation(){
 if(loading) return;
 loading=true;
 
-result.innerHTML="📡 Checking water quality...";
+result.innerHTML=`<div class="loader">💧 Checking water quality...</div>`;
 
 navigator.geolocation.getCurrentPosition(async(pos)=>{
 
