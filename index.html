@@ -6,7 +6,7 @@
 
 <title>DrinkSafe</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700&family=Inter:wght@300;400;500;600&family=Quicksand:wght@400;600&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700&family=Inter:wght@300;400;500;600&family=Quicksand:wght@500;600&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -47,7 +47,10 @@ border:none;background:#0B1F3B;color:white;font-size:16px;
 }
 
 #result{
-margin-top:16px;font-family:'Quicksand';font-size:16px;
+margin-top:16px;
+font-family:'Quicksand';
+font-size:16px;
+letter-spacing:0.2px; /* 👈 말랑한 느낌 */
 }
 
 /* 로딩 */
@@ -72,12 +75,17 @@ margin-top:12px;
 
 /* 차트 */
 .chart{margin-top:18px;text-align:left;}
+
+.chart b{
+display:block;
+margin-bottom:6px; /* 👈 타이틀과 첫 row 간격 */
+}
+
 .row{margin-bottom:10px;}
 .label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;}
 .bar{height:10px;background:#eee;border-radius:6px;overflow:hidden;}
 .fill{height:100%;background:#0B1F3B;border-radius:6px;}
 
-/* LIVE 애니메이션 */
 .live{
 font-size:11px;
 background:#ff4d4d;
@@ -165,14 +173,13 @@ margin-left:6px;
 </div>
 
 <script>
-
 let map, marker;
 let loading=false;
 const result=document.getElementById("result");
 
 const data={
-"south korea":{status:"SAFE",phone:"+821339"},
-"global":{status:"WARNING",phone:""}
+"south korea":{status:"SAFE"},
+"global":{status:"WARNING"}
 };
 
 function normalizeCountry(name){
@@ -202,38 +209,27 @@ marker.setLatLng([lat,lon]);
 }
 
 function render(obj,place){
-
-let text="✅ Safe tap water. No boiling needed.";
-
 result.innerHTML=`
 <b>${place}</b><br><br>
 <b>SAFE</b><br>
-${text}<br><br>
-
-📌 Local pipes & buildings may affect quality.
+✅ Safe tap water. No boiling needed.<br><br>
+📌 Local pipes may affect quality.
 `;
 }
 
 function useMyLocation(){
-
 if(loading) return;
 loading=true;
 
 result.innerHTML=`<div class="loader">💧 Checking water quality...</div>`;
 
 navigator.geolocation.getCurrentPosition(async(pos)=>{
-
-try{
-
 let lat=pos.coords.latitude;
 let lon=pos.coords.longitude;
 
 initMap(lat,lon);
 
-let res=await fetch(
-`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`
-);
-
+let res=await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
 let loc=await res.json();
 
 let country=normalizeCountry(loc.address.country||"");
@@ -243,18 +239,9 @@ if(!data[country]) country="global";
 
 render(data[country],place);
 
-}catch{
-result.innerHTML="❌ Failed to load";
-}
-
-loading=false;
-
-},()=>{
-result.innerHTML="❌ Location permission denied";
 loading=false;
 });
 }
-
 </script>
 
 </body>
