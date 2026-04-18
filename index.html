@@ -41,26 +41,36 @@ margin-top:16px;background:white;border-radius:20px;padding:16px;
 border:1px solid #e8e5de;text-align:center;
 }
 
-.button-row{
+/* ✅ LIVE 영역 (버튼 위) */
+.live-top{
 display:flex;
-justify-content:space-between;
-align-items:center;
-gap:8px;
-}
-
-.button-row button{
-flex:1;
+justify-content:flex-end;
+margin-bottom:6px;
 }
 
 .live-box{
 display:flex;
 align-items:center;
 gap:6px;
-white-space:nowrap;
+}
+
+.live{
+font-size:11px;background:#ff4d4d;color:white;
+padding:3px 6px;border-radius:6px;
+animation:blinkLive 1.2s infinite;
+}
+@keyframes blinkLive{
+0%{opacity:1;}
+50%{opacity:0.3;}
+100%{opacity:1;}
+}
+
+.date{
+font-size:11px;color:#888;
 }
 
 button{
-width:100%;margin-top:12px;padding:16px;border-radius:14px;
+width:100%;margin-top:0;padding:16px;border-radius:14px;
 border:none;background:#0B1F3B;color:white;font-size:16px;
 cursor:pointer;
 }
@@ -97,22 +107,6 @@ margin-top:12px;
 .bar{height:10px;background:#eee;border-radius:6px;overflow:hidden;}
 .fill{height:100%;background:#0B1F3B;border-radius:6px;}
 
-.live{
-font-size:11px;background:#ff4d4d;color:white;
-padding:3px 6px;border-radius:6px;
-animation:blinkLive 1.2s infinite;
-}
-@keyframes blinkLive{
-0%{opacity:1;}
-50%{opacity:0.3;}
-100%{opacity:1;}
-}
-
-.date{
-font-size:11px;color:#888;
-}
-
-/* footer */
 .footer{
 margin-top:14px;
 font-size:11px;
@@ -162,15 +156,15 @@ padding:10px;
 
 <div class="card">
 
-<!-- ✅ 버튼 + LIVE 영역 -->
-<div class="button-row">
-<button onclick="useMyLocation()">Check water near me 💧✨</button>
-
+<!-- ✅ 여기 위치 -->
+<div class="live-top">
 <div class="live-box">
 <span class="live">LIVE</span>
 <span class="date">Apr 18, 2026</span>
 </div>
 </div>
+
+<button onclick="useMyLocation()">Check water near me 💧✨</button>
 
 <div id="result"></div>
 <div id="map"></div>
