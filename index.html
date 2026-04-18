@@ -41,6 +41,24 @@ margin-top:16px;background:white;border-radius:20px;padding:16px;
 border:1px solid #e8e5de;text-align:center;
 }
 
+.button-row{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:8px;
+}
+
+.button-row button{
+flex:1;
+}
+
+.live-box{
+display:flex;
+align-items:center;
+gap:6px;
+white-space:nowrap;
+}
+
 button{
 width:100%;margin-top:12px;padding:16px;border-radius:14px;
 border:none;background:#0B1F3B;color:white;font-size:16px;
@@ -81,7 +99,7 @@ margin-top:12px;
 
 .live{
 font-size:11px;background:#ff4d4d;color:white;
-padding:3px 6px;border-radius:6px;margin-left:6px;
+padding:3px 6px;border-radius:6px;
 animation:blinkLive 1.2s infinite;
 }
 @keyframes blinkLive{
@@ -91,19 +109,18 @@ animation:blinkLive 1.2s infinite;
 }
 
 .date{
-font-size:11px;color:#888;margin-left:6px;
+font-size:11px;color:#888;
 }
 
 /* footer */
 .footer{
-margin-top:14px; /* 👈 더 붙임 */
+margin-top:14px;
 font-size:11px;
 color:#9aa0a6;
 text-align:center;
 line-height:1.5;
 }
 
-/* 버튼 이모지 애니메이션 */
 .contact-emoji{
 display:inline-block;
 animation:float 2s ease-in-out infinite;
@@ -145,14 +162,22 @@ padding:10px;
 
 <div class="card">
 
+<!-- ✅ 버튼 + LIVE 영역 -->
+<div class="button-row">
 <button onclick="useMyLocation()">Check water near me 💧✨</button>
+
+<div class="live-box">
+<span class="live">LIVE</span>
+<span class="date">Apr 18, 2026</span>
+</div>
+</div>
 
 <div id="result"></div>
 <div id="map"></div>
 
 <div class="chart">
 
-<b>Safe Water Countries <span class="live">LIVE</span><span class="date">Apr 18, 2026</span></b>
+<b>Safe Water Countries</b>
 
 <div class="row"><div class="label">🇨🇭 Switzerland <span>95%</span></div><div class="bar"><div class="fill" style="width:95%"></div></div></div>
 <div class="row"><div class="label">🇯🇵 Japan <span>93%</span></div><div class="bar"><div class="fill" style="width:93%"></div></div></div>
