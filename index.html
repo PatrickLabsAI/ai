@@ -8,7 +8,6 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700&family=Inter:wght@300;400;500;600&family=Quicksand:wght@400;600&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
 
-<!-- 🗺️ Leaflet -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
@@ -51,8 +50,9 @@ border:none;background:#0B1F3B;color:white;font-size:16px;
 margin-top:16px;font-family:'Quicksand';font-size:16px;
 }
 
-/* 지도 */
+/* ✅ 지도 기본 숨김 */
 #map{
+display:none;
 height:180px;
 border-radius:14px;
 margin-top:12px;
@@ -97,10 +97,8 @@ padding:3px 6px;border-radius:6px;margin-left:6px;
 
 <div id="result"></div>
 
-<!-- 🗺️ 지도 -->
 <div id="map"></div>
 
-<!-- 📊 차트 -->
 <div class="chart">
 <b>Top Safe Countries <span class="live">LIVE</span></b>
 
@@ -137,8 +135,8 @@ padding:3px 6px;border-radius:6px;margin-left:6px;
 <script>
 
 let map, marker;
-const result=document.getElementById("result");
 let loading=false;
+const result=document.getElementById("result");
 
 /* 데이터 */
 const data={
@@ -152,44 +150,28 @@ const data={
 "global":{status:"WARNING",phone:""}
 };
 
-/* 국가 정규화 */
 function normalizeCountry(name){
 name=name.toLowerCase();
 if(name.includes("korea")) return "south korea";
-if(name.includes("대한민국")) return "south korea";
-if(name.includes("japan")) return "japan";
-if(name.includes("germany")) return "germany";
-if(name.includes("switzerland")) return "switzerland";
-if(name.includes("canada")) return "canada";
-if(name.includes("india")) return "india";
-if(name.includes("nigeria")) return "nigeria";
 return name;
 }
 
-/* 📍 디테일 위치 */
-function getDetailed(address){
-let district =
-address.suburb ||
-address.neighbourhood ||
-address.city_district;
-
-let city =
-address.city ||
-address.town ||
-address.state;
-
-return district && city
-? `${district}, ${city}`
-: city;
+function getDetailed(a){
+let d=a.suburb||a.neighbourhood||a.city_district;
+let c=a.city||a.town||a.state;
+return d&&c?`${d}, ${c}`:c;
 }
 
-/* 지도 */
-function updateMap(lat,lon){
+/* ✅ 지도 생성 안전하게 */
+function initMap(lat,lon){
+
+const mapDiv=document.getElementById("map");
+mapDiv.style.display="block";
+
 if(!map){
 map=L.map('map').setView([lat,lon],13);
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-}).addTo(map);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
 marker=L.marker([lat,lon]).addTo(map);
 }else{
@@ -214,9 +196,7 @@ ${text}<br><br>
 
 📌 Local pipes & buildings may affect quality.<br><br>
 
-${obj.phone?`📞 <a href="tel:${obj.phone}">Call water authority</a><br><br>`:""}
-
-<button onclick="shareResult()">Share 🔗</button>
+${obj.phone?`📞 <a href="tel:${obj.phone}">Call water authority</a>`:""}
 `;
 }
 
@@ -234,7 +214,7 @@ try{
 let lat=pos.coords.latitude;
 let lon=pos.coords.longitude;
 
-updateMap(lat,lon);
+initMap(lat,lon);
 
 let res=await fetch(
 `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`
@@ -242,7 +222,7 @@ let res=await fetch(
 
 let loc=await res.json();
 
-let country=normalizeCountry(loc.address.country || "");
+let country=normalizeCountry(loc.address.country||"");
 let place=getDetailed(loc.address);
 
 if(!data[country]) country="global";
@@ -259,12 +239,6 @@ loading=false;
 result.innerHTML="❌ Location permission denied";
 loading=false;
 });
-}
-
-function shareResult(){
-navigator.share
-? navigator.share({text:result.innerText})
-: (navigator.clipboard.writeText(result.innerText),alert("Copied!"));
 }
 
 </script>
