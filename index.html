@@ -50,10 +50,9 @@ border:none;background:#0B1F3B;color:white;font-size:16px;
 margin-top:16px;
 font-family:'Quicksand';
 font-size:16px;
-letter-spacing:0.2px; /* 👈 말랑한 느낌 */
+letter-spacing:0.2px;
 }
 
-/* 로딩 */
 .loader{
 margin-top:16px;
 font-size:14px;
@@ -65,7 +64,6 @@ animation:blink 1s infinite;
 100%{opacity:0.3;}
 }
 
-/* 지도 */
 #map{
 display:none;
 height:180px;
@@ -73,29 +71,18 @@ border-radius:14px;
 margin-top:12px;
 }
 
-/* 차트 */
 .chart{margin-top:18px;text-align:left;}
-
-.chart b{
-display:block;
-margin-bottom:6px; /* 👈 타이틀과 첫 row 간격 */
-}
-
+.chart b{display:block;margin-bottom:6px;}
 .row{margin-bottom:10px;}
 .label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;}
 .bar{height:10px;background:#eee;border-radius:6px;overflow:hidden;}
 .fill{height:100%;background:#0B1F3B;border-radius:6px;}
 
 .live{
-font-size:11px;
-background:#ff4d4d;
-color:white;
-padding:3px 6px;
-border-radius:6px;
-margin-left:6px;
+font-size:11px;background:#ff4d4d;color:white;
+padding:3px 6px;border-radius:6px;margin-left:6px;
 animation:blinkLive 1.2s infinite;
 }
-
 @keyframes blinkLive{
 0%{opacity:1;}
 50%{opacity:0.3;}
@@ -103,9 +90,7 @@ animation:blinkLive 1.2s infinite;
 }
 
 .date{
-font-size:11px;
-color:#888;
-margin-left:6px;
+font-size:11px;color:#888;margin-left:6px;
 }
 </style>
 </head>
@@ -152,20 +137,20 @@ margin-left:6px;
 <b>Warning Water Countries</b>
 
 <div class="row"><div class="label">🇹🇭 Thailand <span>60%</span></div><div class="bar"><div class="fill" style="width:60%"></div></div></div>
-<div class="row"><div class="label">🇻🇳 Vietnam <span>58%</span></div><div class="bar"><div class="fill" style="width:58%"></div></div></div>
-<div class="row"><div class="label">🇲🇽 Mexico <span>55%</span></div><div class="bar"><div class="fill" style="width:55%"></div></div></div>
-<div class="row"><div class="label">🇧🇷 Brazil <span>57%</span></div><div class="bar"><div class="fill" style="width:57%"></div></div></div>
 <div class="row"><div class="label">🇮🇩 Indonesia <span>59%</span></div><div class="bar"><div class="fill" style="width:59%"></div></div></div>
+<div class="row"><div class="label">🇻🇳 Vietnam <span>58%</span></div><div class="bar"><div class="fill" style="width:58%"></div></div></div>
+<div class="row"><div class="label">🇧🇷 Brazil <span>57%</span></div><div class="bar"><div class="fill" style="width:57%"></div></div></div>
+<div class="row"><div class="label">🇲🇽 Mexico <span>55%</span></div><div class="bar"><div class="fill" style="width:55%"></div></div></div>
 
 <br>
 
 <b>Risk Water Countries</b>
 
 <div class="row"><div class="label">🇮🇳 India <span>30%</span></div><div class="bar"><div class="fill" style="width:30%"></div></div></div>
-<div class="row"><div class="label">🇳🇬 Nigeria <span>25%</span></div><div class="bar"><div class="fill" style="width:25%"></div></div></div>
 <div class="row"><div class="label">🇵🇰 Pakistan <span>28%</span></div><div class="bar"><div class="fill" style="width:28%"></div></div></div>
 <div class="row"><div class="label">🇧🇩 Bangladesh <span>27%</span></div><div class="bar"><div class="fill" style="width:27%"></div></div></div>
 <div class="row"><div class="label">🇪🇹 Ethiopia <span>26%</span></div><div class="bar"><div class="fill" style="width:26%"></div></div></div>
+<div class="row"><div class="label">🇳🇬 Nigeria <span>25%</span></div><div class="bar"><div class="fill" style="width:25%"></div></div></div>
 
 </div>
 
@@ -211,9 +196,16 @@ marker.setLatLng([lat,lon]);
 function render(obj,place){
 result.innerHTML=`
 <b>${place}</b><br><br>
+
 <b>SAFE</b><br>
-✅ Safe tap water. No boiling needed.<br><br>
-📌 Local pipes may affect quality.
+✅ Tap water is safe to drink.<br><br>
+
+📍 Within ~0.5km radius:<br>
+• Municipal supply system stable<br>
+• Water treatment facilities operating normally<br>
+• Sewage & pipeline infrastructure reliable<br><br>
+
+📌 Note: Old building pipes may affect taste or quality.
 `;
 }
 
