@@ -44,6 +44,7 @@ border:1px solid #e8e5de;text-align:center;
 button{
 width:100%;margin-top:12px;padding:16px;border-radius:14px;
 border:none;background:#0B1F3B;color:white;font-size:16px;
+cursor:pointer;
 }
 
 #result{
@@ -93,7 +94,7 @@ animation:blinkLive 1.2s infinite;
 font-size:11px;color:#888;margin-left:6px;
 }
 
-/* ✅ 하단 푸터 */
+/* ✅ Footer */
 .footer{
 margin-top:24px;
 font-size:11px;
@@ -101,9 +102,11 @@ color:#9aa0a6;
 text-align:center;
 line-height:1.5;
 }
-.footer a{
-color:#9aa0a6;
-text-decoration:underline;
+
+.footer button{
+margin-top:10px;
+font-size:13px;
+padding:10px;
 }
 </style>
 </head>
@@ -167,15 +170,18 @@ text-decoration:underline;
 
 </div>
 
-<!-- ✅ Footer -->
+</div>
+
+<!-- ✅ Footer (카드 밖) -->
 <div class="footer">
 This product is an asset of Patrick Labs AI. Data is provided for informational purposes only based on global standards (WHO, CDC, UNICEF) and may vary by local infrastructure.<br>
-Patrick Labs AI is not liable for individual health outcomes.<br><br>
+Patrick Labs AI is not liable for individual health outcomes.
 
-<a href="mailto:patrick@patrick-labs.com">Contact: patrick@patrick-labs.com</a>
+<button onclick="window.location.href='mailto:patrick@patrick-labs.com'">
+문의하기
+</button>
 </div>
 
-</div>
 </div>
 
 <script>
